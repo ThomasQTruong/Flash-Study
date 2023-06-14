@@ -1,3 +1,4 @@
+import 'package:flash_study/flashcard_set.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -61,9 +62,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<FlashcardSet> listOfSets = List.empty(growable: true);
   int _counter = 0;
 
   void _incrementCounter() {
+    listOfSets.add(FlashcardSet(name: _counter.toString()));
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -93,6 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         centerTitle: true,
         actions: <Widget>[
+          // Settings button.
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {},
@@ -118,13 +122,13 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            listOfSets.isEmpty ? const Text("Empty") :
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: listOfSets.length,
+                    itemBuilder: (context, index) => getRow(index),
+                  ),
+                )
           ],
         ),
       ),
@@ -134,6 +138,23 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
       // floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    );
+  }
+
+  Widget getRow(int index) {
+    return ListTile(
+      title: Column(
+        children: [
+          TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              minimumSize: const Size.fromHeight(50),
+            ),
+            onPressed: () {},
+            child: Text(listOfSets[index].name),
+          ),
+        ],
+      ),
     );
   }
 }
