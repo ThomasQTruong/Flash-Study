@@ -1,8 +1,16 @@
 import 'package:flash_study/flashcard_set.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:open_file/open_file.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+enum MenuItem {
+  item1,
+  item2,
+  item3,
 }
 
 class MyApp extends StatelessWidget {
@@ -93,7 +101,12 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: const TextStyle(
+            fontSize: 26,
+          ),
+        ),
         centerTitle: true,
         actions: <Widget>[
           // Settings button.
@@ -128,32 +141,100 @@ class _MyHomePageState extends State<MyHomePage> {
                     itemCount: listOfSets.length,
                     itemBuilder: (context, index) => getRow(index),
                   ),
-                )
+                ),
+            Container(
+              margin: const EdgeInsets.only(bottom: 15),
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(100)),
+                color: Colors.lightGreen,
+              ),
+              padding: EdgeInsets.zero,
+              child: PopupMenuButton<MenuItem>(
+                onSelected: (value) async {
+                  if (value == MenuItem.item1) {
+                    _incrementCounter();
+                  } else if (value == MenuItem.item2) {
+                    final result = await FilePicker.platform.pickFiles();
+                    if (result == null) {
+                      displayMessage("Import cancelled.");
+                      return;
+                    }
+
+                    final file = result.files.first;
+                    if (file.extension != "json") {
+                      displayMessage("Imported file is invalid.");
+                      return;
+                    }
+                    openFile(file);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: MenuItem.item1,
+                    child: Text(
+                        "Create"
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: MenuItem.item2,
+                    child: Text(
+                        "Import"
+                    ),
+                  ),
+                ],
+                tooltip: 'Add Set',
+                child: const Icon(
+                  Icons.add,
+                  size: 50,
+                ),
+              ),
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Add Set',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-      // floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 
   Widget getRow(int index) {
-    return ListTile(
-      title: Column(
-        children: [
-          TextButton(
-            style: TextButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              minimumSize: const Size.fromHeight(50),
+    return Card(
+      child: ListTile(
+        title: Column(
+          children: [
+            Text(
+              listOfSets[index].name,
+              style: const TextStyle(
+                fontSize: 22,
+              )
             ),
-            onPressed: () {},
-            child: Text(listOfSets[index].name),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void openFile(PlatformFile file) {
+    OpenFile.open(file.path);
+  }
+
+  void displayMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          height: 50,
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
-        ],
+          child: Center(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontSize: 20,
+              ),
+            ),
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        elevation: 0,
       ),
     );
   }
