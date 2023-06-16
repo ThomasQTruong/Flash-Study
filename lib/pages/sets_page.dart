@@ -86,15 +86,18 @@ class _SetsPageState extends State<SetsPage> {
                     fontSize: 26,
                   ),
                 ),
-              ) : ListView.builder(
-                itemCount: listOfSets.length,
-                itemBuilder: (context, index) => getSetAsCard(index),
+              ) : Scrollbar(
+                child: ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 80),
+                  itemCount: listOfSets.length,
+                  itemBuilder: (context, index) => getSetAsCard(index),
+                ),
               ),
             ),
-            addSetButtonAndMenu(),
           ],
         ),
       ),
+      floatingActionButton: addSetButtonAndMenu(),
     );
   }
 
@@ -158,13 +161,15 @@ class _SetsPageState extends State<SetsPage> {
       ],
       tooltip: "Add Set",
       child: Container(
-      margin: const EdgeInsets.only(
-          bottom: 10,
-          top: 10,
-        ),
-        child: const Icon(
-          Icons.add_circle_outline,
+        width: 50,
+        height: 50,
+        decoration: const BoxDecoration(
           color: Colors.lightGreen,
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).canvasColor,
           size: 50,
         ),
       ),
@@ -252,57 +257,47 @@ class _SetsPageState extends State<SetsPage> {
   Widget getSetAsCard(int index) {
     return Card(
       child: ListTile(
+        // Set name.
         title: Text(
           listOfSets[index].name,
           style: const TextStyle(
             fontSize: 22,
           ),
         ),
+        // Number of cards in set.
         subtitle: Text(
           "${listOfSets[index].numberOfCards} Cards",
           style: TextStyle(
             color: Theme.of(context).textTheme.displaySmall?.color?.withOpacity(0.6),
           ),
         ),
+        // Action buttons.
         trailing: FittedBox(
           child: Row(
             children: [
               // Not first item, add up arrow.
               index > 0 ? InkWell(
-                onTap: () async {
-                  final setName = await getSetName("Edit");
-                  // Cancelled action.
-                  if (setName == null) {
-                    controller.clear();
-                    return;
-                  }
-
-                  setState(() => listOfSets[index].name = setName);
+                onTap: () {
+                  setState(() => moveSetUp(index));
                 },
                 child: const Icon(Icons.arrow_upward),
-              ) : const Visibility(
-                visible: false,
+              ) : const Opacity(
+                opacity: 0.0,
                 child: Icon(Icons.arrow_upward),
               ),
 
               // Not last item, add down arrow.
               index < listOfSets.length - 1 ? InkWell(
                 onTap: () async {
-                  final setName = await getSetName("Edit");
-                  // Cancelled action.
-                  if (setName == null) {
-                    controller.clear();
-                    return;
-                  }
-
-                  setState(() => listOfSets[index].name = setName);
+                  setState(() => moveSetDown(index));
                 },
                 child: const Icon(Icons.arrow_downward),
-              ) : const Visibility(
-                visible: false,
+              ) : const Opacity(
+                opacity: 0.0,
                 child: Icon(Icons.arrow_downward),
               ),
 
+              // More button and menu.
               moreActionsButtonAndMenu(index),
             ],
           ),
@@ -410,5 +405,35 @@ class _SetsPageState extends State<SetsPage> {
     Navigator.of(context).pop(controller.text);
 
     controller.clear();
+  }
+
+
+  bool moveSetUp(index) {
+    // First set, cannot move any higher.
+    if (index <= 0) {
+      return false;
+    }
+
+    // Switch sets.
+    FlashcardSet previousSet = listOfSets[index - 1];
+    listOfSets[index - 1] = listOfSets[index];
+    listOfSets[index] = previousSet;
+
+    return true;
+  }
+
+
+  bool moveSetDown(index) {
+    // Last set, cannot move any lower.
+    if (index >= listOfSets.length - 1) {
+      return false;
+    }
+
+    // Switch sets.
+    FlashcardSet nextSet = listOfSets[index + 1];
+    listOfSets[index + 1] = listOfSets[index];
+    listOfSets[index] = nextSet;
+
+    return true;
   }
 }
