@@ -3,9 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
 
-enum AddSetMenu {
+enum AddSetMenuItems {
   create,
   import,
+}
+
+
+enum MoreActionsMenuItems {
+  edit,
+  export,
+  delete,
 }
 
 
@@ -84,88 +91,160 @@ class _SetsPageState extends State<SetsPage> {
                 itemBuilder: (context, index) => getSetAsCard(index),
               ),
             ),
-            Container(
-              margin: const EdgeInsets.only(
-                bottom: 15,
-                top: 15,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(100)),
-                color: Theme.of(context).canvasColor,
-                border: Border.all(
-                  color: Colors.lightGreen,
-                  width: 5,
-                ),
-                /*
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.lightGreen.withOpacity(0.5),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-                */
-              ),
-              padding: EdgeInsets.zero,
-              child: PopupMenuButton<AddSetMenu>(
-                onSelected: (value) async {
-                  if (value == AddSetMenu.create) {
-                    final setName = await getSetName("Create");
-                    if (setName == null) {
-                      return;
-                    }
-
-                    setState(() => listOfSets.add(FlashcardSet(name: setName)));
-                  } else if (value == AddSetMenu.import) {
-                    final result = await FilePicker.platform.pickFiles();
-                    if (result == null) {
-                      displayMessage("Import cancelled.");
-                      return;
-                    }
-
-                    final file = result.files.first;
-                    if (file.extension != "json") {
-                      displayMessage("Imported file is invalid.");
-                      return;
-                    }
-                    OpenFile.open(file.path);
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: AddSetMenu.create,
-                    child: Text(
-                        "Create"
-                    ),
-                  ),
-                  const PopupMenuItem(
-                    value: AddSetMenu.import,
-                    child: Text(
-                        "Import"
-                    ),
-                  ),
-                ],
-                tooltip: 'Add Set',
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.lightGreen,
-                  size: 45,
-                  /*
-                  shadows: <Shadow>[
-                    Shadow(
-                      color: Colors.lightGreen.withOpacity(0.5),
-                      blurRadius: 7.0,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                  */
-                ),
-              ),
-            ),
+            addSetButtonAndMenu(),
           ],
         ),
       ),
+    );
+  }
+
+
+  PopupMenuButton<AddSetMenuItems> addSetButtonAndMenu() {
+    return PopupMenuButton<AddSetMenuItems>(
+      onSelected: (value) async {
+        if (value == AddSetMenuItems.create) {
+          final setName = await getSetName("Create");
+          if (setName == null) {
+            return;
+          }
+
+          setState(() => listOfSets.add(FlashcardSet(name: setName)));
+        } else if (value == AddSetMenuItems.import) {
+          final result = await FilePicker.platform.pickFiles();
+          if (result == null) {
+            displayMessage("Import cancelled.");
+            return;
+          }
+
+          final file = result.files.first;
+          if (file.extension != "json") {
+            displayMessage("Imported file is invalid.");
+            return;
+          }
+          OpenFile.open(file.path);
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: AddSetMenuItems.create,
+          child: Row(
+            children: [
+              Icon(Icons.add),
+              Text("  "),
+              Text(
+                "Create",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: AddSetMenuItems.import,
+          child: Row(
+            children: [
+              Icon(Icons.upload),
+              Text("  "),
+              Text(
+                "Import",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      tooltip: "Add Set",
+      child: Container(
+      margin: const EdgeInsets.only(
+          bottom: 10,
+          top: 10,
+        ),
+        child: const Icon(
+          Icons.add_circle_outline,
+          color: Colors.lightGreen,
+          size: 50,
+        ),
+      ),
+    );
+  }
+
+
+  PopupMenuButton<MoreActionsMenuItems> moreActionsButtonAndMenu(index) {
+    return PopupMenuButton<MoreActionsMenuItems>(
+      // When action is selected.
+      onSelected: (value) async {
+        if (value == MoreActionsMenuItems.edit) {
+          final setName = await getSetName("Edit");
+          // Cancelled action.
+          if (setName == null) {
+            controller.clear();
+            return;
+          }
+
+          setState(() => listOfSets[index].name = setName);
+        } else if (value == MoreActionsMenuItems.export) {
+          // TODO: code export.
+        }
+        else if (value == MoreActionsMenuItems.delete) {
+          final deleteConfirmed = await getDeleteConfirmation(index);
+          if (deleteConfirmed == true) {
+            setState(() => listOfSets.removeAt(index));
+          }
+        }
+      },
+      // Create menu.
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: MoreActionsMenuItems.edit,
+          child: Row(
+            children: [
+              Icon(Icons.edit),
+              Text("  "),  // Spacing in-between.
+              Text(
+                "Edit",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: MoreActionsMenuItems.export,
+          child: Row(
+            children: [
+              Icon(Icons.download),
+              Text("  "),  // Spacing in-between.
+              Text(
+                "Export",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: MoreActionsMenuItems.delete,
+          child: Row(
+            children: [
+              Icon(Icons.delete),
+              Text("  "),  // Spacing in-between.
+              Text(
+                "Delete",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      tooltip: "More Actions",
+      child: const Icon(Icons.more_vert),
     );
   }
 
@@ -185,11 +264,11 @@ class _SetsPageState extends State<SetsPage> {
             color: Theme.of(context).textTheme.displaySmall?.color?.withOpacity(0.6),
           ),
         ),
-        trailing: SizedBox(
-          width: 75,
+        trailing: FittedBox(
           child: Row(
             children: [
-              InkWell(
+              // Not first item, add up arrow.
+              index > 0 ? InkWell(
                 onTap: () async {
                   final setName = await getSetName("Edit");
                   // Cancelled action.
@@ -200,33 +279,36 @@ class _SetsPageState extends State<SetsPage> {
 
                   setState(() => listOfSets[index].name = setName);
                 },
-                child: const Icon(Icons.edit),
+                child: const Icon(Icons.arrow_upward),
+              ) : const Visibility(
+                visible: false,
+                child: Icon(Icons.arrow_upward),
               ),
-              InkWell(
-                onTap: () {
 
-                },
-                child: const Icon(Icons.download),
-              ),
-              InkWell(
+              // Not last item, add down arrow.
+              index < listOfSets.length - 1 ? InkWell(
                 onTap: () async {
-                  final deleteConfirmed = await getDeleteConfirmation(index);
-                  if (deleteConfirmed == true) {
-                    setState(() => listOfSets.removeAt(index));
+                  final setName = await getSetName("Edit");
+                  // Cancelled action.
+                  if (setName == null) {
+                    controller.clear();
+                    return;
                   }
+
+                  setState(() => listOfSets[index].name = setName);
                 },
-                child: const Icon(Icons.delete),
+                child: const Icon(Icons.arrow_downward),
+              ) : const Visibility(
+                visible: false,
+                child: Icon(Icons.arrow_downward),
               ),
+
+              moreActionsButtonAndMenu(index),
             ],
           ),
         ),
       ),
     );
-  }
-
-
-  void openFile(PlatformFile file) {
-    OpenFile.open(file.path);
   }
 
 
@@ -293,7 +375,7 @@ class _SetsPageState extends State<SetsPage> {
     context: context,
     builder: (context) => AlertDialog(
         title: Text(
-          "Are you sure you want to delete ${listOfSets[index].name}?",
+          "Are you sure you want to delete: ${listOfSets[index].name}?",
           style: const TextStyle(
             // fontWeight: FontWeight.bold,
           ),

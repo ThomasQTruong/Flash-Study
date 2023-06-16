@@ -15,6 +15,8 @@ class FlashStudy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+
       title: "Flash Study",
       theme: ThemeData(
         fontFamily: GoogleFonts.arvo().fontFamily,
