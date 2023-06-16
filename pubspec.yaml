@@ -37,6 +37,7 @@ dependencies:
   open_file: ^3.3.2
   google_fonts: ^5.0.0
   settings_ui: ^2.0.2
+  firebase_core: ^2.14.0
 
 dev_dependencies:
   flutter_test:
