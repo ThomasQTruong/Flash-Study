@@ -1,4 +1,5 @@
 import 'package:flash_study/objects/flashcard_set.dart';
+import 'package:flash_study/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
@@ -70,7 +71,12 @@ class _SetsPageState extends State<SetsPage> {
           // Settings button.
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage(title: "Settings")),
+              );
+            },
           ),
         ],
       ),
@@ -167,9 +173,9 @@ class _SetsPageState extends State<SetsPage> {
           color: Colors.lightGreen,
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
-        child: Icon(
+        child: const Icon(
           Icons.add,
-          color: Theme.of(context).canvasColor,
+          color: Colors.white,
           size: 50,
         ),
       ),

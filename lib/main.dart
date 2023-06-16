@@ -2,15 +2,22 @@ import 'package:flash_study/pages/sets_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-ColorScheme lightMode = ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 133, 218, 255));
-ColorScheme darkMode = const ColorScheme.dark(primary: Colors.white);
-
 void main() {
   runApp(const FlashStudy());
 }
 
-class FlashStudy extends StatelessWidget {
+class FlashStudy extends StatefulWidget {
   const FlashStudy({super.key});
+
+  @override
+  State<FlashStudy> createState() => FlashStudyState();
+
+  static FlashStudyState of(BuildContext context) =>
+      context.findAncestorStateOfType<FlashStudyState>()!;
+}
+
+class FlashStudyState extends State<FlashStudy>{
+  ThemeMode currentThemeMode = ThemeMode.system;
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +27,22 @@ class FlashStudy extends StatelessWidget {
       title: "Flash Study",
       theme: ThemeData(
         fontFamily: GoogleFonts.arvo().fontFamily,
-        colorScheme: lightMode,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 133, 218, 255)),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        fontFamily: GoogleFonts.arvo().fontFamily,
+        colorScheme: const ColorScheme.dark(),
+        useMaterial3: true,
+      ),
+      themeMode: currentThemeMode,
       home: const SetsPage(title: "Sets"),
     );
+  }
+
+  void changeTheme(ThemeMode themeMode) {
+    setState(() {
+      currentThemeMode = themeMode;
+    });
   }
 }
