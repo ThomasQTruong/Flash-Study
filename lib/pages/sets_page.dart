@@ -300,9 +300,7 @@ class _SetsPageState extends State<SetsPage> {
             children: [
               // Not first item, add up arrow.
               index > 0 ? InkWell(
-                onTap: () {
-                  setState(() => moveSetUp(index));
-                },
+                onTap: () => setState(() => moveSetUp(index)),
                 child: const Icon(Icons.arrow_upward),
               ) : const Opacity(
                 opacity: 0.0,
@@ -311,9 +309,7 @@ class _SetsPageState extends State<SetsPage> {
 
               // Not last item, add down arrow.
               index < listOfSets.length - 1 ? InkWell(
-                onTap: () async {
-                  setState(() => moveSetDown(index));
-                },
+                onTap: () => setState(() => moveSetDown(index)),
                 child: const Icon(Icons.arrow_downward),
               ) : const Opacity(
                 opacity: 0.0,

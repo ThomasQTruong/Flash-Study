@@ -22,6 +22,8 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 2.0,
+        shadowColor: Theme.of(context).colorScheme.inversePrimary,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
           widget.title,
@@ -47,7 +49,9 @@ class _SettingsPageState extends State<SettingsPage> {
               SettingsTile.switchTile(
                 onToggle: (value) {
                   setState(() {
+                    // Toggle dark mode.
                     isDarkMode = !isDarkMode;
+                    // Update theme.
                     changeTheme();
                   });
                 },
@@ -64,10 +68,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
   void changeTheme() {
-    setState(() {
-      FlashStudy.of(context).changeTheme(isDarkMode ? ThemeMode.dark
-                                                    : ThemeMode.light);
-    });
+    setState(() => FlashStudy.of(context).changeTheme(isDarkMode
+                                             ? ThemeMode.dark : ThemeMode.light)
+    );
   }
 
 
@@ -76,6 +79,7 @@ class _SettingsPageState extends State<SettingsPage> {
       leading: const Icon(Icons.login),
       title: const Text("Login/Register"),
       onPressed: (context) {
+        // Go to login/register page.
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -83,7 +87,8 @@ class _SettingsPageState extends State<SettingsPage> {
               title: "Login/Register",
             ),
           ),
-        );
+          // Update settings page after returning.
+        ).then((_) => setState(() {}));
       },
     );
   }
@@ -94,6 +99,9 @@ class _SettingsPageState extends State<SettingsPage> {
       leading: const Icon(Icons.logout),
       title: const Text("Logout"),
       onPressed: (context) {
+        setState(() {
+          FirebaseAuth.instance.signOut();
+        });
       },
     );
   }
