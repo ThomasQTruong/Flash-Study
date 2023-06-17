@@ -58,6 +58,8 @@ class _SetsPageState extends State<SetsPage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
+        elevation: 2.0,
+        shadowColor: Theme.of(context).colorScheme.inversePrimary,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
           widget.title,
@@ -74,7 +76,9 @@ class _SetsPageState extends State<SetsPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SettingsPage(title: "Settings")),
+                MaterialPageRoute(
+                  builder: (context) => const SettingsPage(title: "Settings")
+                ),
               );
             },
           ),
@@ -89,7 +93,7 @@ class _SetsPageState extends State<SetsPage> {
                 child: Text(
                   "Empty",
                   style: TextStyle(
-                    fontSize: 26,
+                    fontSize: 45,
                   ),
                 ),
               ) : Scrollbar(
@@ -170,11 +174,23 @@ class _SetsPageState extends State<SetsPage> {
         width: 50,
         height: 50,
         decoration: const BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black45,
+              blurRadius: 7.0,
+              offset: Offset(0, 2.0),
+            ),
+          ],
           color: Colors.lightGreen,
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         child: const Icon(
           Icons.add,
+          shadows: <Shadow>[
+            Shadow(
+              color: Colors.black45, blurRadius: 20.0, offset: Offset(0, 2.0),
+            ),
+          ],
           color: Colors.white,
           size: 50,
         ),
@@ -274,7 +290,8 @@ class _SetsPageState extends State<SetsPage> {
         subtitle: Text(
           "${listOfSets[index].numberOfCards} Cards",
           style: TextStyle(
-            color: Theme.of(context).textTheme.displaySmall?.color?.withOpacity(0.6),
+            color: Theme.of(context).textTheme.displaySmall
+                                    ?.color?.withOpacity(0.6),
           ),
         ),
         // Action buttons.

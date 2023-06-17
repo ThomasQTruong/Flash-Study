@@ -37,7 +37,9 @@ class FlashStudyState extends State<FlashStudy>{
       title: "Flash Study",
       theme: ThemeData(
         fontFamily: GoogleFonts.arvo().fontFamily,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 133, 218, 255)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 133, 218, 255),
+        ),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
