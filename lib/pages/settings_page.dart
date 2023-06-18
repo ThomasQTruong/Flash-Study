@@ -1,10 +1,10 @@
 import 'package:flash_study/main.dart';
 import 'package:flash_study/pages/login_register_page.dart';
+import 'package:flash_study/data/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-bool isDarkMode = false;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.title});
@@ -50,12 +50,26 @@ class _SettingsPageState extends State<SettingsPage> {
                 onToggle: (value) {
                   setState(() {
                     // Toggle dark mode.
-                    isDarkMode = !isDarkMode;
+                    UserData.isDarkMode = !UserData.isDarkMode;
                     // Update theme.
-                    changeTheme();
+                    FlashStudy.of(context).setState(() {});
+
+                    // Update Firebase storage if user is logged in.
+                    if (UserData.isUserLoggedIn()) {
+                      DocumentReference<Map<String, dynamic>> usersRef =
+                                                   UserData.getUsersFireStore();
+                      // If user exists in storage, update; else, create.
+                      usersRef.get().then((docSnapshot) {
+                        if (docSnapshot.exists) {
+                            usersRef.update({"darkMode": UserData.isDarkMode});
+                        } else {
+                          usersRef.set({"darkMode": UserData.isDarkMode});
+                        }
+                      });
+                    }
                   });
                 },
-                initialValue: isDarkMode,
+                initialValue: UserData.isDarkMode,
                 leading: const Icon(Icons.dark_mode),
                 title: const Text("Dark Mode"),
               ),
@@ -63,13 +77,6 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ],
       ),
-    );
-  }
-
-
-  void changeTheme() {
-    setState(() => FlashStudy.of(context).changeTheme(isDarkMode
-                                             ? ThemeMode.dark : ThemeMode.light)
     );
   }
 

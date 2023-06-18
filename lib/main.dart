@@ -1,8 +1,9 @@
 import 'package:flash_study/pages/sets_page.dart';
+import 'package:flash_study/data/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'data/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -13,6 +14,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+
+  UserData.loadUserData();
 
   // Run app.
   runApp(const FlashStudy());
@@ -29,8 +32,6 @@ class FlashStudy extends StatefulWidget {
 }
 
 class FlashStudyState extends State<FlashStudy>{
-  ThemeMode currentThemeMode = ThemeMode.system;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,14 +50,18 @@ class FlashStudyState extends State<FlashStudy>{
         colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
       ),
-      themeMode: currentThemeMode,
+      themeMode: UserData.getTheme(),
       home: const SetsPage(title: "Sets"),
     );
   }
 
-  void changeTheme(ThemeMode themeMode) {
-    setState(() {
-      currentThemeMode = themeMode;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(seconds: 3), () {
+        setState(() {});
+      });
     });
   }
 }

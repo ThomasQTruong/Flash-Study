@@ -1,3 +1,4 @@
+import 'package:flash_study/utils/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -126,7 +127,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
     return Padding(
       padding: const EdgeInsets.only(
           top: 5.0,
-          bottom: 15.0,
+          bottom: 5.0,
           left: 25.0,
           right: 25.0
       ),
@@ -138,7 +139,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                 opacity: (errorMessage == "") ? 0.0 : 1.0,
                 child: const Icon(
                   Icons.error,
-                  color: Color.fromRGBO(217, 48, 37, 1.0),
+                  color: Palette.errorColor,
                   size: 20,
                 ),
               ),
@@ -147,7 +148,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
             TextSpan(
               text: errorMessage,
               style: const TextStyle(
-                color: Color.fromRGBO(217, 48, 37, 1.0),
+                color: Palette.errorColor,
               ),
             ),
           ],

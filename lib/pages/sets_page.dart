@@ -1,4 +1,5 @@
 import 'package:flash_study/objects/flashcard_set.dart';
+import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -29,9 +30,7 @@ class SetsPage extends StatefulWidget {
 
 
 class _SetsPageState extends State<SetsPage> {
-  List<FlashcardSet> listOfSets = List.empty(growable: true);
   late TextEditingController controller;
-
 
   @override
   void initState() {
@@ -89,7 +88,7 @@ class _SetsPageState extends State<SetsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-              child: listOfSets.isEmpty ? const Center(
+              child: UserData.listOfSets.isEmpty ? const Center(
                 child: Text(
                   "Empty",
                   style: TextStyle(
@@ -99,7 +98,7 @@ class _SetsPageState extends State<SetsPage> {
               ) : Scrollbar(
                 child: ListView.builder(
                   padding: const EdgeInsets.only(bottom: 80),
-                  itemCount: listOfSets.length,
+                  itemCount: UserData.listOfSets.length,
                   itemBuilder: (context, index) => getSetAsCard(index),
                 ),
               ),
@@ -121,7 +120,7 @@ class _SetsPageState extends State<SetsPage> {
             return;
           }
 
-          setState(() => listOfSets.add(FlashcardSet(name: setName)));
+          setState(() => UserData.listOfSets.add(FlashcardSet(name: setName)));
         } else if (value == AddSetMenuItems.import) {
           final result = await FilePicker.platform.pickFiles();
           if (result == null) {
@@ -211,14 +210,14 @@ class _SetsPageState extends State<SetsPage> {
             return;
           }
 
-          setState(() => listOfSets[index].name = setName);
+          setState(() => UserData.listOfSets[index].name = setName);
         } else if (value == MoreActionsMenuItems.export) {
           // TODO: code export.
         }
         else if (value == MoreActionsMenuItems.delete) {
           final deleteConfirmed = await getDeleteConfirmation(index);
           if (deleteConfirmed == true) {
-            setState(() => listOfSets.removeAt(index));
+            setState(() => UserData.listOfSets.removeAt(index));
           }
         }
       },
@@ -281,14 +280,14 @@ class _SetsPageState extends State<SetsPage> {
       child: ListTile(
         // Set name.
         title: Text(
-          listOfSets[index].name,
+          UserData.listOfSets[index].name,
           style: const TextStyle(
             fontSize: 22,
           ),
         ),
         // Number of cards in set.
         subtitle: Text(
-          "${listOfSets[index].numberOfCards} Cards",
+          "${UserData.listOfSets[index].numberOfCards} Cards",
           style: TextStyle(
             color: Theme.of(context).textTheme.displaySmall
                                     ?.color?.withOpacity(0.6),
@@ -308,7 +307,7 @@ class _SetsPageState extends State<SetsPage> {
               ),
 
               // Not last item, add down arrow.
-              index < listOfSets.length - 1 ? InkWell(
+              index < UserData.listOfSets.length - 1 ? InkWell(
                 onTap: () => setState(() => moveSetDown(index)),
                 child: const Icon(Icons.arrow_downward),
               ) : const Opacity(
@@ -389,7 +388,7 @@ class _SetsPageState extends State<SetsPage> {
     context: context,
     builder: (context) => AlertDialog(
         title: Text(
-          "Are you sure you want to delete: ${listOfSets[index].name}?",
+          "Are you sure you want to delete: ${UserData.listOfSets[index].name}?",
           style: const TextStyle(
             // fontWeight: FontWeight.bold,
           ),
@@ -434,9 +433,9 @@ class _SetsPageState extends State<SetsPage> {
     }
 
     // Switch sets.
-    FlashcardSet previousSet = listOfSets[index - 1];
-    listOfSets[index - 1] = listOfSets[index];
-    listOfSets[index] = previousSet;
+    FlashcardSet previousSet = UserData.listOfSets[index - 1];
+    UserData.listOfSets[index - 1] = UserData.listOfSets[index];
+    UserData.listOfSets[index] = previousSet;
 
     return true;
   }
@@ -444,14 +443,14 @@ class _SetsPageState extends State<SetsPage> {
 
   bool moveSetDown(index) {
     // Last set, cannot move any lower.
-    if (index >= listOfSets.length - 1) {
+    if (index >= UserData.listOfSets.length - 1) {
       return false;
     }
 
     // Switch sets.
-    FlashcardSet nextSet = listOfSets[index + 1];
-    listOfSets[index + 1] = listOfSets[index];
-    listOfSets[index] = nextSet;
+    FlashcardSet nextSet = UserData.listOfSets[index + 1];
+    UserData.listOfSets[index + 1] = UserData.listOfSets[index];
+    UserData.listOfSets[index] = nextSet;
 
     return true;
   }
