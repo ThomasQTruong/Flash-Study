@@ -1,6 +1,7 @@
 import 'package:flash_study/main.dart';
 import 'package:flash_study/pages/login_register_page.dart';
 import 'package:flash_study/data/user_data.dart';
+import 'package:flash_study/utils/simple_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -51,22 +52,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   setState(() {
                     // Toggle dark mode.
                     UserData.isDarkMode = !UserData.isDarkMode;
+
                     // Update theme.
                     FlashStudy.of(context).setState(() {});
 
-                    // Update Firebase storage if user is logged in.
-                    if (UserData.isUserLoggedIn()) {
-                      DocumentReference<Map<String, dynamic>> usersRef =
-                                                   UserData.getUsersFireStore();
-                      // If user exists in storage, update; else, create.
-                      usersRef.get().then((docSnapshot) {
-                        if (docSnapshot.exists) {
-                            usersRef.update({"darkMode": UserData.isDarkMode});
-                        } else {
-                          usersRef.set({"darkMode": UserData.isDarkMode});
-                        }
-                      });
-                    }
+                    // Save to Firebase and SharedPreferences.
+                    saveDarkMode();
                   });
                 },
                 initialValue: UserData.isDarkMode,
@@ -81,13 +72,32 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
 
+  void saveDarkMode() async {
+    // Update Firebase storage if user is logged in.
+    if (UserData.isLoggedIn()) {
+      DocumentReference<Map<String, dynamic>> usersRef =
+      UserData.getUsersFireStore();
+      // If user exists in storage, update; else, create.
+      usersRef.get().then((docSnapshot) {
+        if (docSnapshot.exists) {
+          usersRef.update({"darkMode": UserData.isDarkMode});
+        } else {
+          usersRef.set({"darkMode": UserData.isDarkMode});
+        }
+      });
+    }
+    // Save locally too.
+    await SimplePreferences.setDarkMode(UserData.isDarkMode);
+  }
+
+
   SettingsTile loginOrRegisterButton() {
     return SettingsTile.navigation(
       leading: const Icon(Icons.login),
       title: const Text("Login/Register"),
-      onPressed: (context) {
+      onPressed: (context) async {
         // Go to login/register page.
-        Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => const LoginRegisterPage(
@@ -95,7 +105,12 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           // Update settings page after returning.
-        ).then((_) => setState(() {}));
+        ).then((_) {
+          Future.delayed(const Duration(seconds: 1), () {
+            setState(() {});
+            print(UserData.currentTheme);
+          });
+        });
       },
     );
   }

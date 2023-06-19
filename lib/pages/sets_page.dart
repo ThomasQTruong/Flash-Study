@@ -1,5 +1,6 @@
 import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/data/user_data.dart';
+import 'package:flash_study/utils/palette.dart';
 import 'package:flash_study/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -409,7 +410,7 @@ class _SetsPageState extends State<SetsPage> {
             child: const Text(
               "Delete",
               style: TextStyle(
-                color: Color.fromARGB(255, 190, 0, 0),
+                color: Palette.deleteColor,
                 fontWeight: FontWeight.bold,
               ),
             ),

@@ -1,4 +1,6 @@
 import 'package:flash_study/utils/palette.dart';
+import 'package:flash_study/main.dart';
+import 'package:flash_study/data/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -69,12 +71,16 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    FirebaseAuth.instance.signInWithEmailAndPassword(
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
                       email: emailController.text,
                       password: passwordController.text,
                     ).then((value) {
-                      setState(() => Navigator.pop(context));
+                      // Load user's data and update theme.
+                      UserData.loadData();
+                      UserData.updateTheme();
+
+                      Navigator.pop(context);
                     }).catchError((error) {
                       setState(() => errorMessage = (error as
                                      FirebaseAuthException).message.toString());

@@ -1,5 +1,7 @@
 import 'package:flash_study/pages/sets_page.dart';
 import 'package:flash_study/data/user_data.dart';
+import 'package:flash_study/utils/palette.dart';
+import 'package:flash_study/utils/simple_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,7 +17,7 @@ void main() async {
   );
   FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
-  UserData.loadUserData();
+  await SimplePreferences.init();
 
   // Run app.
   runApp(const FlashStudy());
@@ -41,7 +43,7 @@ class FlashStudyState extends State<FlashStudy>{
       theme: ThemeData(
         fontFamily: GoogleFonts.arvo().fontFamily,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 133, 218, 255),
+          seedColor: Palette.mainColor,
         ),
         useMaterial3: true,
       ),
@@ -50,16 +52,18 @@ class FlashStudyState extends State<FlashStudy>{
         colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
       ),
-      themeMode: UserData.getTheme(),
+      themeMode: UserData.currentTheme,
       home: const SetsPage(title: "Sets"),
     );
   }
+
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 3), () {
+      Future.delayed(const Duration(seconds: 1), () async {
+        UserData.loadData();
         setState(() {});
       });
     });
