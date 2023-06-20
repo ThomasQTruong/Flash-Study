@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'data/firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,13 +14,14 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+  // FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
   await SimplePreferences.init();
 
   // Run app.
   runApp(const FlashStudy());
 }
+
 
 class FlashStudy extends StatefulWidget {
   const FlashStudy({super.key});
@@ -32,6 +32,7 @@ class FlashStudy extends StatefulWidget {
   static FlashStudyState of(BuildContext context) =>
       context.findAncestorStateOfType<FlashStudyState>()!;
 }
+
 
 class FlashStudyState extends State<FlashStudy>{
   @override
@@ -62,8 +63,11 @@ class FlashStudyState extends State<FlashStudy>{
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Wait for data to load if any.
       await UserData.loadData();
       UserData.updateTheme();
+
+      // Update app.
       setState(() {});
     });
   }

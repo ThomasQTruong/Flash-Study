@@ -32,29 +32,21 @@ class UserData {
 
 
   static Future<void> loadData() async {
-    if (isLoggedIn()) {
-      await getUsersFireStore().get().then((docSnapshot) async {
-        print("::::::::::::::::::::::::::::::::::::::::::::::IN FIRESTORE");
-        // Found a save.
-        if (docSnapshot.exists) {
-          isDarkMode = await docSnapshot.data()?["darkMode"];
-          print(":::::::::::::::::::::::::::::::::::::::::LOADED FROM ACCOUNT");
-          return;
-        }
-      }).catchError((error) {
-        // Something went wrong.
-        return;
-      });
-    }
-
-    // Not logged in/did not find data in Firestore.
-    if (SimplePreferences.getDarkMode() != null) {
-      print(":::::::::::::::::::::::::::::::::::::::::LOADED FROM LOCAL");
-      isDarkMode = SimplePreferences.getDarkMode() ?? false;
-      return;
-    }
-
-    // No data to load at all.
-    return;
+    await getUsersFireStore().get().then((docSnapshot) async {
+      // Found data in account.
+      if (docSnapshot.exists) {
+        isDarkMode = await docSnapshot.data()?["darkMode"];
+        // Sync data with local.
+        SimplePreferences.setDarkMode(isDarkMode);
+      } else {
+        // Did not find data in account; throw exception.
+        throw FirebaseAuthException(code: "No data found.");
+      }
+    }).catchError((_) {
+      // Something went wrong/data or account doesn't exist; try local.
+      if (SimplePreferences.getDarkMode() != null) {
+        isDarkMode = SimplePreferences.getDarkMode() ?? false;
+      }
+    });
   }
 }
