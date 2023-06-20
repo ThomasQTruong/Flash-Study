@@ -61,11 +61,10 @@ class FlashStudyState extends State<FlashStudy>{
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 1), () async {
-        UserData.loadData();
-        setState(() {});
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await UserData.loadData();
+      UserData.updateTheme();
+      setState(() {});
     });
   }
 }

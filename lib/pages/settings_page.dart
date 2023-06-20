@@ -3,6 +3,7 @@ import 'package:flash_study/pages/login_register_page.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/utils/simple_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,38 +36,41 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         centerTitle: true,
       ),
-      body: SettingsList(
-        sections: [
-          SettingsSection(
-            title: const Text("Account"),
-            tiles: <SettingsTile>[
-              (FirebaseAuth.instance.currentUser == null)
-                          ? loginOrRegisterButton() : logoutButton(),
-            ],
-          ),
-          SettingsSection(
-            title: const Text("Themes"),
-            tiles: <SettingsTile>[
-              SettingsTile.switchTile(
-                onToggle: (value) {
-                  setState(() {
-                    // Toggle dark mode.
-                    UserData.isDarkMode = !UserData.isDarkMode;
+      body: ProgressHUD(
+        child: Builder(
+          builder: (context) => SettingsList(
+            sections: [
+              SettingsSection(
+                title: const Text("Account"),
+                tiles: <SettingsTile>[
+                  (FirebaseAuth.instance.currentUser == null)
+                      ? loginOrRegisterButton() : logoutButton(),
+                ],
+              ),
+              SettingsSection(
+                title: const Text("Themes"),
+                tiles: <SettingsTile>[
+                  SettingsTile.switchTile(
+                    onToggle: (value) {
+                      setState(() {
+                        // Toggle dark mode and update theme.
+                        UserData.isDarkMode = !UserData.isDarkMode;
 
-                    // Update theme.
-                    FlashStudy.of(context).setState(() {});
+                        updateThemeAndState();
 
-                    // Save to Firebase and SharedPreferences.
-                    saveDarkMode();
-                  });
-                },
-                initialValue: UserData.isDarkMode,
-                leading: const Icon(Icons.dark_mode),
-                title: const Text("Dark Mode"),
+                        // Save to Firebase and SharedPreferences.
+                        saveDarkMode();
+                      });
+                    },
+                    initialValue: UserData.isDarkMode,
+                    leading: const Icon(Icons.dark_mode),
+                    title: const Text("Dark Mode"),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -76,13 +80,13 @@ class _SettingsPageState extends State<SettingsPage> {
     // Update Firebase storage if user is logged in.
     if (UserData.isLoggedIn()) {
       DocumentReference<Map<String, dynamic>> usersRef =
-      UserData.getUsersFireStore();
+            UserData.getUsersFireStore();
       // If user exists in storage, update; else, create.
-      usersRef.get().then((docSnapshot) {
+      await usersRef.get().then((docSnapshot) async {
         if (docSnapshot.exists) {
-          usersRef.update({"darkMode": UserData.isDarkMode});
+          await usersRef.update({"darkMode": UserData.isDarkMode});
         } else {
-          usersRef.set({"darkMode": UserData.isDarkMode});
+          await usersRef.set({"darkMode": UserData.isDarkMode});
         }
       });
     }
@@ -106,10 +110,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           // Update settings page after returning.
         ).then((_) {
-          Future.delayed(const Duration(seconds: 1), () {
-            setState(() {});
-            print(UserData.currentTheme);
-          });
+          updateThemeAndState();
         });
       },
     );
@@ -120,11 +121,25 @@ class _SettingsPageState extends State<SettingsPage> {
     return SettingsTile.navigation(
       leading: const Icon(Icons.logout),
       title: const Text("Logout"),
-      onPressed: (context) {
-        setState(() {
-          FirebaseAuth.instance.signOut();
-        });
+      onPressed: (context) async {
+        // Show loading circle.
+        final progress = ProgressHUD.of(context);
+        progress?.show();
+
+        await FirebaseAuth.instance.signOut();
+        setState(() {});
+
+        // Loaded, get dismiss loading circle.
+        progress?.dismiss();
       },
     );
+  }
+
+
+  void updateThemeAndState() {
+    setState(() {
+      UserData.updateTheme();
+    });
+    FlashStudy.of(context).setState(() {});
   }
 }

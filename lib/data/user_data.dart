@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_study/objects/flashcard_set.dart';
@@ -7,7 +5,7 @@ import 'package:flash_study/utils/simple_preferences.dart';
 import 'package:flutter/material.dart';
 
 class UserData {
-  static ThemeMode currentTheme = ThemeMode.system;
+  static ThemeMode currentTheme = ThemeMode.light;
   static bool isDarkMode = false;
   static List<FlashcardSet> listOfSets = List.empty(growable: true);
 
@@ -35,12 +33,11 @@ class UserData {
 
   static Future<void> loadData() async {
     if (isLoggedIn()) {
-      getUsersFireStore().get().then((docSnapshot) {
+      await getUsersFireStore().get().then((docSnapshot) async {
         print("::::::::::::::::::::::::::::::::::::::::::::::IN FIRESTORE");
         // Found a save.
         if (docSnapshot.exists) {
-          isDarkMode = docSnapshot.data()?["darkMode"];
-          UserData.updateTheme();
+          isDarkMode = await docSnapshot.data()?["darkMode"];
           print(":::::::::::::::::::::::::::::::::::::::::LOADED FROM ACCOUNT");
           return;
         }
@@ -53,8 +50,7 @@ class UserData {
     // Not logged in/did not find data in Firestore.
     if (SimplePreferences.getDarkMode() != null) {
       print(":::::::::::::::::::::::::::::::::::::::::LOADED FROM LOCAL");
-      isDarkMode = SimplePreferences.getDarkMode()!;
-      UserData.updateTheme();
+      isDarkMode = SimplePreferences.getDarkMode() ?? false;
       return;
     }
 

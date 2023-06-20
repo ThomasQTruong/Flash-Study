@@ -1,8 +1,8 @@
 import 'package:flash_study/utils/palette.dart';
-import 'package:flash_study/main.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 
 class LoginRegisterPage extends StatefulWidget {
   const LoginRegisterPage({super.key, required this.title});
@@ -36,93 +36,108 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
         ),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25.0,
-                right: 25.0,
-                bottom: 10.0
-              ),
-              child: TextField(
-                controller: emailController,
-                obscureText: false,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Email",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Password",
-                ),
-              ),
-            ),
-            displayError(),
-            Row(
+      body: ProgressHUD(
+        child: Builder(
+          builder: (context) => Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: emailController.text,
-                      password: passwordController.text,
-                    ).then((value) {
-                      // Load user's data and update theme.
-                      UserData.loadData();
-                      UserData.updateTheme();
-
-                      Navigator.pop(context);
-                    }).catchError((error) {
-                      setState(() => errorMessage = (error as
-                                     FirebaseAuthException).message.toString());
-                    });
-                  },
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(
-                      fontSize: 16,
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 25.0,
+                      right: 25.0,
+                      bottom: 10.0
+                  ),
+                  child: TextField(
+                    controller: emailController,
+                    obscureText: false,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Email",
                     ),
                   ),
                 ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    // Create account and then login.
-                    FirebaseAuth.instance.createUserWithEmailAndPassword(
-                      email: emailController.text,
-                      password: passwordController.text,
-                    ).then((value) {
-                      FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: emailController.text,
-                        password: passwordController.text,
-                      );
-
-                      // Return to previous page.
-                      setState(() => Navigator.pop(context));
-                    }).catchError((error) {
-                      setState(() => errorMessage = (error as
-                                     FirebaseAuthException).message.toString());
-                    });
-                  },
-                  child: const Text(
-                    "Signup",
-                    style: TextStyle(
-                      fontSize: 16,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Password",
                     ),
                   ),
+                ),
+                displayError(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        final progress = ProgressHUD.of(context);
+                        progress?.show();
+
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passwordController.text,
+                        ).then((value) async {
+                          await UserData.loadData();
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        }).catchError((error) {
+                          setState(() => errorMessage = (error as
+                          FirebaseAuthException).message.toString());
+                        });
+
+                        progress?.dismiss();
+                      },
+                      child: const Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final progress = ProgressHUD.of(context);
+                        progress?.show();
+
+                        // Create account and then login.
+                        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passwordController.text,
+                        ).then((value) async {
+                          await FirebaseAuth.instance.signInWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text,
+                          );
+
+                          // Return to previous page.
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        }).catchError((error) {
+                          setState(() => errorMessage = (error as
+                          FirebaseAuthException).message.toString());
+                        });
+
+                        progress?.dismiss();
+                      },
+                      child: const Text(
+                        "Signup",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
