@@ -49,4 +49,40 @@ class UserData {
       }
     });
   }
+
+
+  static Future<void> saveDarkMode() async {
+    // Update Firebase storage if user is logged in.
+    if (UserData.isLoggedIn()) {
+      DocumentReference<Map<String, dynamic>> usersRef = getUsersFireStore();
+      // If user exists in storage, update; else, create.
+      await usersRef.get().then((docSnapshot) async {
+        if (docSnapshot.exists) {
+          await usersRef.update({"darkMode": isDarkMode});
+        } else {
+          await usersRef.set({"darkMode": isDarkMode});
+        }
+      });
+    }
+    // Save locally too.
+    await SimplePreferences.setDarkMode(isDarkMode);
+  }
+
+
+  static Future<void> saveSet() async {
+    // Update Firebase storage if user is logged in.
+    if (UserData.isLoggedIn()) {
+      DocumentReference<Map<String, dynamic>> usersRef = getUsersFireStore();
+      // If user exists in storage, update; else, create.
+      await usersRef.get().then((docSnapshot) async {
+        if (docSnapshot.exists) {
+          await usersRef.update({"darkMode": isDarkMode});
+        } else {
+          await usersRef.set({"darkMode": isDarkMode});
+        }
+      });
+    }
+    // Save locally too.
+    await SimplePreferences.setDarkMode(isDarkMode);
+  }
 }

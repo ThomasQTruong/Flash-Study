@@ -64,7 +64,7 @@ class _SetsPageState extends State<SetsPage> {
         title: Text(
           widget.title,
           style: const TextStyle(
-            fontSize: 26,
+            fontSize: 26.0,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -93,12 +93,12 @@ class _SetsPageState extends State<SetsPage> {
                 child: Text(
                   "Empty",
                   style: TextStyle(
-                    fontSize: 45,
+                    fontSize: 45.0,
                   ),
                 ),
               ) : Scrollbar(
                 child: ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 80),
+                  padding: const EdgeInsets.only(bottom: 80.0),
                   itemCount: UserData.listOfSets.length,
                   itemBuilder: (context, index) => getSetAsCard(index),
                 ),
@@ -171,28 +171,28 @@ class _SetsPageState extends State<SetsPage> {
       ],
       tooltip: "Add Set",
       child: Container(
-        width: 50,
-        height: 50,
+        width: 50.0,
+        height: 50.0,
         decoration: const BoxDecoration(
           boxShadow: [
             BoxShadow(
               color: Colors.black45,
               blurRadius: 7.0,
-              offset: Offset(0, 2.0),
+              offset: Offset(0.0, 2.0),
             ),
           ],
           color: Colors.lightGreen,
-          borderRadius: BorderRadius.all(Radius.circular(100)),
+          borderRadius: BorderRadius.all(Radius.circular(100.0)),
         ),
         child: const Icon(
           Icons.add,
           shadows: <Shadow>[
             Shadow(
-              color: Colors.black45, blurRadius: 20.0, offset: Offset(0, 2.0),
+              color: Colors.black45, blurRadius: 20.0, offset: Offset(0.0, 2.0),
             ),
           ],
           color: Colors.white,
-          size: 50,
+          size: 50.0,
         ),
       ),
     );
@@ -283,7 +283,7 @@ class _SetsPageState extends State<SetsPage> {
         title: Text(
           UserData.listOfSets[index].name,
           style: const TextStyle(
-            fontSize: 22,
+            fontSize: 22.0,
           ),
         ),
         // Number of cards in set.
@@ -330,21 +330,21 @@ class _SetsPageState extends State<SetsPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Container(
-          height: 50,
+          height: 50.0,
           decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
           ),
           child: Center(
             child: Text(
               message,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 20.0,
               ),
             ),
           ),
         ),
         behavior: SnackBarBehavior.floating,
-        elevation: 0,
+        elevation: 0.0,
       ),
     );
   }

@@ -59,7 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         updateThemeAndState();
 
                         // Save to Firebase and SharedPreferences.
-                        saveDarkMode();
+                        UserData.saveDarkMode();
                       });
                     },
                     initialValue: UserData.isDarkMode,
@@ -73,25 +73,6 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
     );
-  }
-
-
-  void saveDarkMode() async {
-    // Update Firebase storage if user is logged in.
-    if (UserData.isLoggedIn()) {
-      DocumentReference<Map<String, dynamic>> usersRef =
-            UserData.getUsersFireStore();
-      // If user exists in storage, update; else, create.
-      await usersRef.get().then((docSnapshot) async {
-        if (docSnapshot.exists) {
-          await usersRef.update({"darkMode": UserData.isDarkMode});
-        } else {
-          await usersRef.set({"darkMode": UserData.isDarkMode});
-        }
-      });
-    }
-    // Save locally too.
-    await SimplePreferences.setDarkMode(UserData.isDarkMode);
   }
 
 
