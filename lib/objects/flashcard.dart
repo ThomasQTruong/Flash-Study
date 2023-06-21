@@ -11,7 +11,7 @@ class Flashcard {
 
   factory Flashcard.fromJson(Map<String, dynamic> json) {
     return Flashcard(
-        index: json["index"],
+        index: json["id"],
         front: json["front"],
         back: json["back"]
     );
@@ -19,7 +19,7 @@ class Flashcard {
 
 
   Map<String, dynamic> toJson() => {
-    "index": index,
+    "id": index,
     "front": front,
     "back": back
   };

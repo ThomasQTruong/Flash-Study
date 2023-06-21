@@ -4,12 +4,14 @@ import 'flashcard.dart';
 ///
 /// A set of flashcards.
 class FlashcardSet {
+  int? index;
   String name;
   int numberOfCards = 0;
   List<Flashcard> flashcards = List.empty(growable: true);
 
 
-  FlashcardSet({required this.name});
+  FlashcardSet({required this.index, required this.name});
+  /*
   FlashcardSet.load({required this.name, required this.numberOfCards,
                                             required this.flashcards});
 
@@ -43,5 +45,20 @@ class FlashcardSet {
     "name": name,
     "numberOfCards": numberOfCards,
     "flashcards": cardToJson()
+  };
+  */
+  // [TESTING]
+  FlashcardSet.load({required this.name, required this.numberOfCards});
+
+  factory FlashcardSet.fromJson(Map<String, dynamic> json) {
+    return FlashcardSet.load(
+      name: json["name"],
+      numberOfCards: json["numberOfCards"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "numberOfCards": numberOfCards
   };
 }

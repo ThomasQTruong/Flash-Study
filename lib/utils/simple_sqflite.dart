@@ -4,12 +4,12 @@ import 'package:flash_study/objects/flashcard_set.dart';
 
 class SimpleSqflite {
   static const int _version = 1;
-  static const _databaseName = "FlashcardSets.db";
+  static const _databaseName = "FlashStudy.db";
 
 
   static Future<void> createDatabaseTables(Database db) async {
     await db.execute("""
-      CREATE TABLE IF NOT EXISTS Flashcard_Sets (
+      CREATE TABLE IF NOT EXISTS Sets (
         name TEXT,
         numberOfCards INTEGER
       )
@@ -21,7 +21,7 @@ class SimpleSqflite {
         id INTEGER,
         front TEXT,
         back TEXT,
-        FOREIGN KEY (setName) REFERENCES flashcard_sets(name) ON DELETE CASCADE
+        FOREIGN KEY (setName) REFERENCES Sets(name) ON DELETE CASCADE
       )
     """);
   }
@@ -40,16 +40,16 @@ class SimpleSqflite {
   static Future<int> addSet(FlashcardSet cardSet) async {
     final db = await _getDB();
 
-    return await db.insert("Flashcard_Sets", cardSet.toJson(),
+    return await db.insert("Sets", cardSet.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
 
-  static Future<int> updateSet(FlashcardSet cardSet) async {
+  static Future<int> updateSet(String oldName, FlashcardSet cardSet) async {
     final db = await _getDB();
-    return await db.update("", cardSet.toJson(),
+    return await db.update("Sets", cardSet.toJson(),
       where: "name = ?",
-      whereArgs: [cardSet.name],
+      whereArgs: [oldName],
       conflictAlgorithm: ConflictAlgorithm.replace
     );
   }

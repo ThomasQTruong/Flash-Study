@@ -89,12 +89,6 @@ class _SetsPageState extends State<SetsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(onPressed: (){
-              SimpleSqflite.addSet(FlashcardSet(name: "MEOW"));
-            }, child: Text("Add")),
-            ElevatedButton(onPressed: (){
-
-            }, child: Text("Update")),
             Expanded(
               child: UserData.listOfSets.isEmpty() ? const Center(
                 child: Text(
@@ -129,12 +123,16 @@ class _SetsPageState extends State<SetsPage> {
             return;
           }
           // Set names are supposed to be unique.
-          if (UserData.listOfSets.anySetNamed(setName)) {
+          if (UserData.listOfSets.hasSetNamed(setName)) {
             displayMessage("Set name already exists!");
             return;
           }
 
-          setState(() => UserData.listOfSets.add(FlashcardSet(name: setName)));
+          setState(() => UserData.listOfSets.add(
+            FlashcardSet(index: UserData.listOfSets.length(),
+                         name: setName))
+          );
+          SimpleSqflite.addSet(UserData.listOfSets.getLast());
         } else if (value == AddSetMenuItems.import) {
           final result = await FilePicker.platform.pickFiles();
           if (result == null) {
@@ -223,8 +221,15 @@ class _SetsPageState extends State<SetsPage> {
             controller.clear();
             return;
           }
+          if (UserData.listOfSets.hasSetNamed(setName)) {
+            controller.clear();
+            displayMessage("Set name already exists!");
+            return;
+          }
 
+          String oldName = UserData.listOfSets.getNameAt(index);
           setState(() => UserData.listOfSets.setNameAt(index, setName));
+          SimpleSqflite.updateSet(oldName, UserData.listOfSets.getAt(index));
         } else if (value == MoreActionsMenuItems.export) {
           // TODO: code export.
         }

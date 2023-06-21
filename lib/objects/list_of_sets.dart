@@ -63,6 +63,11 @@ class ListOfSets {
   }
 
 
+  FlashcardSet getLast() {
+    return sets[sets.length - 1];
+  }
+
+
   String getNameAt(int index) {
     return sets[index].name;
   }
@@ -108,7 +113,7 @@ class ListOfSets {
   }
 
 
-  bool anySetNamed(String name) {
+  bool hasSetNamed(String name) {
     for (FlashcardSet aSet in sets) {
       if (aSet.name == name) {
         return true;
