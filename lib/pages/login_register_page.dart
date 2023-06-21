@@ -1,5 +1,5 @@
 import 'package:flash_study/utils/palette.dart';
-import 'package:flash_study/data/user_data.dart';
+import 'package:flash_study/utils/simple_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
@@ -81,7 +81,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                           email: emailController.text,
                           password: passwordController.text,
                         ).then((value) async {
-                          await UserData.loadData();
+                          await SimpleFirebase.loadData();
                           if (context.mounted) {
                             Navigator.pop(context);
                           }

@@ -1,12 +1,11 @@
 import 'package:flash_study/main.dart';
 import 'package:flash_study/pages/login_register_page.dart';
 import 'package:flash_study/data/user_data.dart';
-import 'package:flash_study/utils/simple_preferences.dart';
+import 'package:flash_study/utils/simple_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.title});
@@ -43,8 +42,9 @@ class _SettingsPageState extends State<SettingsPage> {
               SettingsSection(
                 title: const Text("Account"),
                 tiles: <SettingsTile>[
-                  (FirebaseAuth.instance.currentUser == null)
-                      ? loginOrRegisterButton() : logoutButton(),
+                  // Display logout/login based on if user is logged in.
+                  (SimpleFirebase.isLoggedIn())
+                      ? logoutButton() : loginOrRegisterButton(),
                 ],
               ),
               SettingsSection(
@@ -59,7 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         updateThemeAndState();
 
                         // Save to Firebase and SharedPreferences.
-                        UserData.saveDarkMode();
+                        SimpleFirebase.saveDarkMode();
                       });
                     },
                     initialValue: UserData.isDarkMode,

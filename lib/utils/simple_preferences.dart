@@ -5,11 +5,14 @@ class SimplePreferences {
 
   static const _keyDarkMode = "darkMode";
 
+
   static Future init() async =>
       _preferences = await SharedPreferences.getInstance();
 
+
   static Future setDarkMode(bool isDarkMode) async =>
       await _preferences.setBool(_keyDarkMode, isDarkMode);
+
 
   static bool? getDarkMode() => _preferences.getBool(_keyDarkMode);
 }

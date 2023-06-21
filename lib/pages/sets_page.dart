@@ -89,7 +89,7 @@ class _SetsPageState extends State<SetsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-              child: UserData.listOfSets.isEmpty ? const Center(
+              child: UserData.listOfSets.isEmpty() ? const Center(
                 child: Text(
                   "Empty",
                   style: TextStyle(
@@ -99,7 +99,7 @@ class _SetsPageState extends State<SetsPage> {
               ) : Scrollbar(
                 child: ListView.builder(
                   padding: const EdgeInsets.only(bottom: 80.0),
-                  itemCount: UserData.listOfSets.length,
+                  itemCount: UserData.listOfSets.length(),
                   itemBuilder: (context, index) => getSetAsCard(index),
                 ),
               ),
@@ -116,8 +116,14 @@ class _SetsPageState extends State<SetsPage> {
     return PopupMenuButton<AddSetMenuItems>(
       onSelected: (value) async {
         if (value == AddSetMenuItems.create) {
+          // Get name from user.
           final setName = await getSetName("Create");
           if (setName == null) {
+            return;
+          }
+          // Set names are supposed to be unique.
+          if (UserData.listOfSets.anySetNamed(setName)) {
+            displayMessage("Set name already exists!");
             return;
           }
 
@@ -211,7 +217,7 @@ class _SetsPageState extends State<SetsPage> {
             return;
           }
 
-          setState(() => UserData.listOfSets[index].name = setName);
+          setState(() => UserData.listOfSets.setNameAt(index, setName));
         } else if (value == MoreActionsMenuItems.export) {
           // TODO: code export.
         }
@@ -281,14 +287,14 @@ class _SetsPageState extends State<SetsPage> {
       child: ListTile(
         // Set name.
         title: Text(
-          UserData.listOfSets[index].name,
+          UserData.listOfSets.getNameAt(index),
           style: const TextStyle(
             fontSize: 22.0,
           ),
         ),
         // Number of cards in set.
         subtitle: Text(
-          "${UserData.listOfSets[index].numberOfCards} Cards",
+          "${UserData.listOfSets.getNumberOfCardsAt(index)} Cards",
           style: TextStyle(
             color: Theme.of(context).textTheme.displaySmall
                                     ?.color?.withOpacity(0.6),
@@ -300,7 +306,9 @@ class _SetsPageState extends State<SetsPage> {
             children: [
               // Not first item, add up arrow.
               index > 0 ? InkWell(
-                onTap: () => setState(() => moveSetUp(index)),
+                onTap: () => setState(() {
+                  UserData.listOfSets.moveSetUpAt(index);
+                }),
                 child: const Icon(Icons.arrow_upward),
               ) : const Opacity(
                 opacity: 0.0,
@@ -308,8 +316,10 @@ class _SetsPageState extends State<SetsPage> {
               ),
 
               // Not last item, add down arrow.
-              index < UserData.listOfSets.length - 1 ? InkWell(
-                onTap: () => setState(() => moveSetDown(index)),
+              index < UserData.listOfSets.length() - 1 ? InkWell(
+                onTap: () => setState(() {
+                  UserData.listOfSets.moveSetDownAt(index);
+                }),
                 child: const Icon(Icons.arrow_downward),
               ) : const Opacity(
                 opacity: 0.0,
@@ -389,7 +399,7 @@ class _SetsPageState extends State<SetsPage> {
     context: context,
     builder: (context) => AlertDialog(
         title: Text(
-          "Are you sure you want to delete: ${UserData.listOfSets[index].name}?",
+          "Are you sure you want to delete: ${UserData.listOfSets.getNameAt(index)}?",
           style: const TextStyle(
             // fontWeight: FontWeight.bold,
           ),
@@ -424,35 +434,5 @@ class _SetsPageState extends State<SetsPage> {
     Navigator.of(context).pop(controller.text);
 
     controller.clear();
-  }
-
-
-  bool moveSetUp(index) {
-    // First set, cannot move any higher.
-    if (index <= 0) {
-      return false;
-    }
-
-    // Switch sets.
-    FlashcardSet previousSet = UserData.listOfSets[index - 1];
-    UserData.listOfSets[index - 1] = UserData.listOfSets[index];
-    UserData.listOfSets[index] = previousSet;
-
-    return true;
-  }
-
-
-  bool moveSetDown(index) {
-    // Last set, cannot move any lower.
-    if (index >= UserData.listOfSets.length - 1) {
-      return false;
-    }
-
-    // Switch sets.
-    FlashcardSet nextSet = UserData.listOfSets[index + 1];
-    UserData.listOfSets[index + 1] = UserData.listOfSets[index];
-    UserData.listOfSets[index] = nextSet;
-
-    return true;
   }
 }
