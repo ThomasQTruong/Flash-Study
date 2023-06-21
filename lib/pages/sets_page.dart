@@ -1,6 +1,7 @@
 import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/utils/palette.dart';
+import 'package:flash_study/utils/simple_sqflite.dart';
 import 'package:flash_study/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -88,6 +89,12 @@ class _SetsPageState extends State<SetsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            ElevatedButton(onPressed: (){
+              SimpleSqflite.addSet(FlashcardSet(name: "MEOW"));
+            }, child: Text("Add")),
+            ElevatedButton(onPressed: (){
+
+            }, child: Text("Update")),
             Expanded(
               child: UserData.listOfSets.isEmpty() ? const Center(
                 child: Text(
