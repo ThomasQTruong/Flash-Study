@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_study/data/user_data.dart';
+import 'package:flash_study/objects/list_of_sets.dart';
 import 'package:flash_study/utils/simple_preferences.dart';
 
 class SimpleFirebase {
@@ -9,32 +10,50 @@ class SimpleFirebase {
   }
 
 
-  static DocumentReference<Map<String, dynamic>> getUsersFireStore() {
-    return FirebaseFirestore.instance.collection("users")
+  static DocumentReference<Map<String, dynamic>> getPreferencesFirestore() {
+    return FirebaseFirestore.instance.collection("preferences")
         .doc(FirebaseAuth.instance.currentUser?.uid);
   }
 
 
-  static Future<void> saveDarkMode() async {
+  static DocumentReference<ListOfSets> getSetsFirestore() {
+    return FirebaseFirestore.instance.collection("sets").withConverter(
+      fromFirestore: ListOfSets.fromJson,
+      toFirestore: (ListOfSets setList, options) => setList.toJson()
+    ).doc(FirebaseAuth.instance.currentUser?.uid);
+  }
+
+
+  static Future<void> savePreferences() async {
     // Update Firebase storage if user is logged in.
     if (isLoggedIn()) {
-      DocumentReference<Map<String, dynamic>> usersRef = getUsersFireStore();
-      // If user exists in storage, update; else, create.
-      await usersRef.get().then((docSnapshot) async {
-        if (docSnapshot.exists) {
-          await usersRef.update({"darkMode": UserData.isDarkMode});
-        } else {
-          await usersRef.set({"darkMode": UserData.isDarkMode});
+      final docRef = getPreferencesFirestore();
+      await docRef.set(
+        {
+          "isDarkMode": UserData.isDarkMode
         }
-      });
+      );
     }
     // Save locally too.
     await SimplePreferences.setDarkMode(UserData.isDarkMode);
   }
 
 
-  static Future<void> loadData() async {
-    await getUsersFireStore().get().then((docSnapshot) async {
+  static Future<void> saveSets() async {
+    // Update Firebase storage if user is logged in.
+    if (isLoggedIn()) {
+      final docRef = getSetsFirestore();
+      docRef.set(UserData.listOfSets);
+
+      // await usersRef.set({"isDarkMode": UserData.isDarkMode});
+    }
+    // Save locally too.
+    await SimplePreferences.setDarkMode(UserData.isDarkMode);
+  }
+
+
+  static Future<void> loadPreferences() async {
+    await getPreferencesFirestore().get().then((docSnapshot) async {
       // Found data in account.
       if (docSnapshot.exists) {
         UserData.isDarkMode = await docSnapshot.data()?["darkMode"];
@@ -50,23 +69,5 @@ class SimpleFirebase {
         UserData.isDarkMode = SimplePreferences.getDarkMode() ?? false;
       }
     });
-  }
-
-
-  static Future<void> saveSet() async {
-    // Update Firebase storage if user is logged in.
-    if (isLoggedIn()) {
-      DocumentReference<Map<String, dynamic>> usersRef = getUsersFireStore();
-      // If user exists in storage, update; else, create.
-      await usersRef.get().then((docSnapshot) async {
-        if (docSnapshot.exists) {
-          await usersRef.update({"darkMode": UserData.isDarkMode});
-        } else {
-          await usersRef.set({"darkMode": UserData.isDarkMode});
-        }
-      });
-    }
-    // Save locally too.
-    await SimplePreferences.setDarkMode(UserData.isDarkMode);
   }
 }

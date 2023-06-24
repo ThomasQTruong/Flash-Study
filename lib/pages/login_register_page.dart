@@ -81,7 +81,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                           email: emailController.text,
                           password: passwordController.text,
                         ).then((value) async {
-                          await SimpleFirebase.loadData();
+                          await SimpleFirebase.loadPreferences();
                           if (context.mounted) {
                             Navigator.pop(context);
                           }

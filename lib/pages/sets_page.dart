@@ -1,7 +1,9 @@
 import 'package:flash_study/objects/flashcard_set.dart';
+import 'package:flash_study/objects/flashcard.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/utils/palette.dart';
 import 'package:flash_study/utils/simple_sqflite.dart';
+import 'package:flash_study/utils/simple_firebase.dart';
 import 'package:flash_study/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -127,11 +129,24 @@ class _SetsPageState extends State<SetsPage> {
             displayMessage("Set name already exists!");
             return;
           }
+          if (setName == "") {
+            displayMessage("Set name cannot be blank!");
+            return;
+          }
 
-          setState(() => UserData.listOfSets.add(
-            FlashcardSet(index: UserData.listOfSets.length(),
-                         name: setName))
-          );
+          UserData.listOfSets.add(FlashcardSet(name: setName,
+              index: UserData.listOfSets.length()));
+          UserData.listOfSets.getLast().add(
+              Flashcard(index: UserData.listOfSets.getLast().numberOfCards,
+                  flashcardSet: UserData.listOfSets.getLast(),
+                  front: "test"));
+          UserData.listOfSets.getLast().add(
+              Flashcard(index: UserData.listOfSets.getLast().numberOfCards,
+                  flashcardSet: UserData.listOfSets.getLast(),
+                  front: "test2"));
+          setState(() {});
+
+          SimpleFirebase.saveSets();
           SimpleSqflite.addSet(UserData.listOfSets.getLast());
         } else if (value == AddSetMenuItems.import) {
           final result = await FilePicker.platform.pickFiles();
@@ -224,6 +239,11 @@ class _SetsPageState extends State<SetsPage> {
           if (UserData.listOfSets.hasSetNamed(setName)) {
             controller.clear();
             displayMessage("Set name already exists!");
+            return;
+          }
+          if (setName == "") {
+            controller.clear();
+            displayMessage("Set name cannot be blank!");
             return;
           }
 

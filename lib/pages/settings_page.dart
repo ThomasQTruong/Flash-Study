@@ -59,7 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         updateThemeAndState();
 
                         // Save to Firebase and SharedPreferences.
-                        SimpleFirebase.saveDarkMode();
+                        SimpleFirebase.savePreferences();
                       });
                     },
                     initialValue: UserData.isDarkMode,

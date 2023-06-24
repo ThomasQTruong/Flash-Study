@@ -1,25 +1,33 @@
+import 'package:flash_study/objects/flashcard_set.dart';
+import 'package:flash_study/data/user_data.dart';
+
 /// flashcard.dart
 ///
 /// A flashcard.
 class Flashcard {
-  int index;
+  FlashcardSet? flashcardSet;
+  int? index;
   String front;
   String back;
 
 
-  Flashcard({required this.index, this.front = "", this.back = ""});
+  Flashcard({required this.flashcardSet, required this.index,
+                             this.front = "", this.back = ""});
+
 
   factory Flashcard.fromJson(Map<String, dynamic> json) {
     return Flashcard(
-        index: json["id"],
-        front: json["front"],
-        back: json["back"]
+      flashcardSet: UserData.listOfSets.getByName(json["setName"]),
+      index: json["cardIndex"],
+      front: json["front"],
+      back: json["back"]
     );
   }
 
 
   Map<String, dynamic> toJson() => {
-    "id": index,
+    "setName": flashcardSet?.name ?? "",
+    "cardIndex": index,
     "front": front,
     "back": back
   };

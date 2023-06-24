@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_study/objects/flashcard_set.dart';
 
 class ListOfSets {
@@ -6,31 +7,27 @@ class ListOfSets {
   ListOfSets();
   ListOfSets.load({required this.sets});
 
-  factory ListOfSets.fromJson(Map<String, dynamic> json) {
+  factory ListOfSets.fromJson(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
+    final json = snapshot.data();
     List<FlashcardSet> loadedSets = List.empty(growable: true);
 
-    json["sets"].forEach((Map<String, dynamic> setJson) {
-      loadedSets.add(FlashcardSet.fromJson(setJson));
+    json?["sets"].forEach((Map<String, dynamic> setJson) {
+      loadedSets.add(FlashcardSet.firestoreFromJson(setJson));
     });
 
     return ListOfSets.load(sets: loadedSets);
   }
 
 
-  List<Map<String, dynamic>> setsToJson() {
+  Map<String, dynamic> toJson() {
     List<Map<String, dynamic>> jsonSets = List.empty(growable: true);
 
     for (FlashcardSet cardSet in sets) {
-      jsonSets.add(cardSet.toJson());
+      jsonSets.add(cardSet.firestoreToJson());
     }
 
-    return jsonSets;
+    return {"sets": jsonSets};
   }
-
-
-  Map<String, dynamic> toJson() => {
-    "sets": setsToJson()
-  };
 
 
   bool isEmpty() {
@@ -70,6 +67,17 @@ class ListOfSets {
 
   String getNameAt(int index) {
     return sets[index].name;
+  }
+
+
+  FlashcardSet? getByName(String setToGet) {
+    for (FlashcardSet set in sets) {
+      if (set.name == setToGet) {
+        return set;
+      }
+    }
+
+    return null;
   }
 
 

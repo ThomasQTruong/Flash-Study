@@ -2,7 +2,6 @@ import 'package:flash_study/pages/sets_page.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/utils/palette.dart';
 import 'package:flash_study/utils/simple_firebase.dart';
-import 'package:flash_study/utils/simple_sqflite.dart';
 import 'package:flash_study/utils/simple_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -66,7 +65,7 @@ class FlashStudyState extends State<FlashStudy>{
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Wait for data to load if any.
-      await SimpleFirebase.loadData();
+      await SimpleFirebase.loadPreferences();
       UserData.updateTheme();
 
       // Update app.

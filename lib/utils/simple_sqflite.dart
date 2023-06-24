@@ -10,15 +10,15 @@ class SimpleSqflite {
   static Future<void> createDatabaseTables(Database db) async {
     await db.execute("""
       CREATE TABLE IF NOT EXISTS Sets (
-        name TEXT,
-        numberOfCards INTEGER
+        setIndex INTEGER,
+        name TEXT
       )
     """);
 
     await db.execute("""
       CREATE TABLE IF NOT EXISTS Flashcards (
         setName TEXT,
-        id INTEGER,
+        cardIndex INTEGER,
         front TEXT,
         back TEXT,
         FOREIGN KEY (setName) REFERENCES Sets(name) ON DELETE CASCADE
@@ -40,14 +40,14 @@ class SimpleSqflite {
   static Future<int> addSet(FlashcardSet cardSet) async {
     final db = await _getDB();
 
-    return await db.insert("Sets", cardSet.toJson(),
+    return await db.insert("Sets", cardSet.sqlToJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
 
   static Future<int> updateSet(String oldName, FlashcardSet cardSet) async {
     final db = await _getDB();
-    return await db.update("Sets", cardSet.toJson(),
+    return await db.update("Sets", cardSet.sqlToJson(),
       where: "name = ?",
       whereArgs: [oldName],
       conflictAlgorithm: ConflictAlgorithm.replace

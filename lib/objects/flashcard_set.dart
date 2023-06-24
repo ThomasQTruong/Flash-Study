@@ -11,21 +11,23 @@ class FlashcardSet {
 
 
   FlashcardSet({required this.index, required this.name});
-  /*
-  FlashcardSet.load({required this.name, required this.numberOfCards,
-                                            required this.flashcards});
 
-  factory FlashcardSet.fromJson(Map<String, dynamic> json) {
+  FlashcardSet.firestoreLoad({required this.index, required this.name,
+                                             required this.flashcards});
+
+
+  // Firebase firestore.
+  factory FlashcardSet.firestoreFromJson(Map<String, dynamic> json) {
     List<Flashcard> loadedCards = List.empty(growable: true);
 
     json["flashcards"].forEach((Map<String, dynamic> cardJson) {
       loadedCards.add(Flashcard.fromJson(cardJson));
     });
 
-    return FlashcardSet.load(
-        name: json["name"],
-        numberOfCards: json["numberOfCards"],
-        flashcards: loadedCards
+    return FlashcardSet.firestoreLoad(
+      index: json["setIndex"],
+      name: json["name"],
+      flashcards: loadedCards
     );
   }
 
@@ -41,24 +43,31 @@ class FlashcardSet {
   }
 
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> firestoreToJson() => {
+    "setIndex": index,
     "name": name,
-    "numberOfCards": numberOfCards,
     "flashcards": cardToJson()
   };
-  */
-  // [TESTING]
-  FlashcardSet.load({required this.name, required this.numberOfCards});
 
-  factory FlashcardSet.fromJson(Map<String, dynamic> json) {
-    return FlashcardSet.load(
-      name: json["name"],
-      numberOfCards: json["numberOfCards"],
+
+  // SQL
+  factory FlashcardSet.sqlFromJson(Map<String, dynamic> json) {
+    return FlashcardSet(
+      index: json["setIndex"],
+      name: json["name"]
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    "name": name,
-    "numberOfCards": numberOfCards
+
+  Map<String, dynamic> sqlToJson() => {
+    "setIndex": index,
+    "name": name
   };
+
+
+  // Regular functions.
+  void add(Flashcard card) {
+    flashcards.add(card);
+    ++numberOfCards;
+  }
 }
