@@ -11,9 +11,9 @@ class ListOfSets {
     final json = snapshot.data();
     List<FlashcardSet> loadedSets = List.empty(growable: true);
 
-    json?["sets"].forEach((Map<String, dynamic> setJson) {
+    for (var setJson in List.from(json?["sets"])) {
       loadedSets.add(FlashcardSet.firestoreFromJson(setJson));
-    });
+    }
 
     return ListOfSets.load(sets: loadedSets);
   }

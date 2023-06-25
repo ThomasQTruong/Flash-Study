@@ -63,6 +63,8 @@ class FlashStudyState extends State<FlashStudy>{
   @override
   void initState() {
     super.initState();
+
+    // Data loading in pages/sets_page.dart also.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Wait for data to load if any.
       await SimpleFirebase.loadPreferences();

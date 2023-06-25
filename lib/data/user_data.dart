@@ -7,6 +7,16 @@ class UserData {
   static ListOfSets listOfSets = ListOfSets();
 
 
+  static Future<void> overwriteSet(ListOfSets set) async {
+    listOfSets = set;
+  }
+
+
+  static int getNumberOfSets() {
+    return listOfSets.length();
+  }
+
+
   static ThemeMode getTheme() {
     return UserData.isDarkMode ? ThemeMode.dark : ThemeMode.light;
   }

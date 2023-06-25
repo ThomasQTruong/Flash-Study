@@ -1,5 +1,4 @@
 import 'package:flash_study/objects/flashcard_set.dart';
-import 'package:flash_study/objects/flashcard.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/utils/palette.dart';
 import 'package:flash_study/utils/simple_sqflite.dart';
@@ -41,6 +40,12 @@ class _SetsPageState extends State<SetsPage> {
     super.initState();
 
     controller = TextEditingController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Load settings from Firebase if any.
+      await SimpleFirebase.loadSets();
+      setState(() {});
+    });
   }
 
 
@@ -134,17 +139,14 @@ class _SetsPageState extends State<SetsPage> {
             return;
           }
 
-          UserData.listOfSets.add(FlashcardSet(name: setName,
-              index: UserData.listOfSets.length()));
-          UserData.listOfSets.getLast().add(
-              Flashcard(index: UserData.listOfSets.getLast().numberOfCards,
-                  flashcardSet: UserData.listOfSets.getLast(),
-                  front: "test"));
-          UserData.listOfSets.getLast().add(
-              Flashcard(index: UserData.listOfSets.getLast().numberOfCards,
-                  flashcardSet: UserData.listOfSets.getLast(),
-                  front: "test2"));
-          setState(() {});
+          FlashcardSet setToAdd = FlashcardSet(name: setName,
+                index: UserData.getNumberOfSets());
+
+          setState(() {
+            UserData.listOfSets.add(setToAdd);
+            setToAdd.create(front: "test", back: "test");
+            setToAdd.create(front: "test5", back: "test2");
+          });
 
           SimpleFirebase.saveSets();
           SimpleSqflite.addSet(UserData.listOfSets.getLast());

@@ -13,20 +13,22 @@ class FlashcardSet {
   FlashcardSet({required this.index, required this.name});
 
   FlashcardSet.firestoreLoad({required this.index, required this.name,
-                                             required this.flashcards});
+                              required this.numberOfCards, required this.flashcards});
 
 
   // Firebase firestore.
   factory FlashcardSet.firestoreFromJson(Map<String, dynamic> json) {
+    print("=====================================[FLASHCARDSET]=====================================");
     List<Flashcard> loadedCards = List.empty(growable: true);
 
-    json["flashcards"].forEach((Map<String, dynamic> cardJson) {
+    for (var cardJson in List.of(json["flashcards"])) {
       loadedCards.add(Flashcard.fromJson(cardJson));
-    });
+    }
 
     return FlashcardSet.firestoreLoad(
       index: json["setIndex"],
       name: json["name"],
+      numberOfCards: loadedCards.length,
       flashcards: loadedCards
     );
   }
@@ -68,6 +70,17 @@ class FlashcardSet {
   // Regular functions.
   void add(Flashcard card) {
     flashcards.add(card);
+    ++numberOfCards;
+  }
+
+
+  void create({String front = "", String back = ""}) {
+    flashcards.add(Flashcard(
+      flashcardSet: this,
+      index: numberOfCards,
+      front: front,
+      back: back
+    ));
     ++numberOfCards;
   }
 }

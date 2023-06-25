@@ -19,7 +19,7 @@ class SimpleFirebase {
   static DocumentReference<ListOfSets> getSetsFirestore() {
     return FirebaseFirestore.instance.collection("sets").withConverter(
       fromFirestore: ListOfSets.fromJson,
-      toFirestore: (ListOfSets setList, options) => setList.toJson()
+      toFirestore: (ListOfSets setList, _) => setList.toJson()
     ).doc(FirebaseAuth.instance.currentUser?.uid);
   }
 
@@ -34,21 +34,23 @@ class SimpleFirebase {
         }
       );
     }
-    // Save locally too.
-    await SimplePreferences.setDarkMode(UserData.isDarkMode);
   }
 
 
   static Future<void> saveSets() async {
     // Update Firebase storage if user is logged in.
     if (isLoggedIn()) {
-      final docRef = getSetsFirestore();
-      docRef.set(UserData.listOfSets);
-
-      // await usersRef.set({"isDarkMode": UserData.isDarkMode});
+      await getSetsFirestore().set(UserData.listOfSets);
     }
-    // Save locally too.
-    await SimplePreferences.setDarkMode(UserData.isDarkMode);
+  }
+
+
+  static Future<void> loadSets() async {
+    // Update Firebase storage if user is logged in.
+    if (isLoggedIn()) {
+      final docSnap = await getSetsFirestore().get();
+      await UserData.overwriteSet(docSnap.data()!);
+    }
   }
 
 
@@ -56,7 +58,7 @@ class SimpleFirebase {
     await getPreferencesFirestore().get().then((docSnapshot) async {
       // Found data in account.
       if (docSnapshot.exists) {
-        UserData.isDarkMode = await docSnapshot.data()?["darkMode"];
+        UserData.isDarkMode = await docSnapshot.data()?["isDarkMode"];
         // Sync data with local.
         SimplePreferences.setDarkMode(UserData.isDarkMode);
       } else {
