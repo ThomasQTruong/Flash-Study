@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SimplePreferences {
   static late SharedPreferences _preferences;
 
-  static const _keyDarkMode = "darkMode";
+  static const _keyIsDarkMode = "isDarkMode";
 
 
   static Future init() async =>
@@ -11,8 +11,8 @@ class SimplePreferences {
 
 
   static Future setDarkMode(bool isDarkMode) async =>
-      await _preferences.setBool(_keyDarkMode, isDarkMode);
+      await _preferences.setBool(_keyIsDarkMode, isDarkMode);
 
 
-  static bool? getDarkMode() => _preferences.getBool(_keyDarkMode);
+  static bool? getDarkMode() => _preferences.getBool(_keyIsDarkMode);
 }

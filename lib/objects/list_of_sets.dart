@@ -4,8 +4,10 @@ import 'package:flash_study/objects/flashcard_set.dart';
 class ListOfSets {
   List<FlashcardSet> sets = List.empty(growable: true);
 
+
   ListOfSets();
   ListOfSets.load({required this.sets});
+
 
   factory ListOfSets.fromJson(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
     final json = snapshot.data();

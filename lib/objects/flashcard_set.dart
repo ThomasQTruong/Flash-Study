@@ -11,7 +11,6 @@ class FlashcardSet {
 
 
   FlashcardSet({required this.index, required this.name});
-
   FlashcardSet.firestoreLoad({required this.index, required this.name,
                               required this.numberOfCards, required this.flashcards});
 
