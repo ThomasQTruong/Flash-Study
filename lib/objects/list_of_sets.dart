@@ -9,7 +9,21 @@ class ListOfSets {
   ListOfSets.load({required this.sets});
 
 
-  factory ListOfSets.fromJson(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
+  factory ListOfSets.sqfliteFromJson(List<Map<String, dynamic>> listJson) {
+    List<FlashcardSet> loadedSets = List.empty(growable: true);
+
+    for (var setJson in listJson) {
+      loadedSets.add(FlashcardSet(
+        index: setJson["setIndex"],
+        name: setJson["name"]
+      ));
+    }
+
+    return ListOfSets.load(sets: loadedSets);
+  }
+
+
+  factory ListOfSets.firestoreFromJson(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
     final json = snapshot.data();
     List<FlashcardSet> loadedSets = List.empty(growable: true);
 
@@ -21,7 +35,7 @@ class ListOfSets {
   }
 
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> firestoreToJson() {
     List<Map<String, dynamic>> jsonSets = List.empty(growable: true);
 
     for (FlashcardSet cardSet in sets) {

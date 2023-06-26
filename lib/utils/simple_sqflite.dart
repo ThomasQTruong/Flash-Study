@@ -1,6 +1,8 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flash_study/objects/flashcard_set.dart';
+import 'package:flash_study/objects/list_of_sets.dart';
+import 'package:flash_study/data/user_data.dart';
 
 class SimpleSqflite {
   static const int _version = 1;
@@ -52,5 +54,31 @@ class SimpleSqflite {
       whereArgs: [oldName],
       conflictAlgorithm: ConflictAlgorithm.replace
     );
+  }
+
+
+  static Future<int> deleteSet(String nameOfSetToDelete) async {
+    final db = await _getDB();
+    return await db.delete("Sets",
+        where: "name = ?",
+        whereArgs: [nameOfSetToDelete]
+    );
+  }
+
+
+  static Future<void> loadSets() async {
+    final db = await _getDB();
+
+    // Load sets.
+    final List<Map<String, dynamic>> listJson = await db.query("Sets");
+    if (listJson.isEmpty) {
+      return;
+    }
+    ListOfSets setsList = ListOfSets.sqfliteFromJson(listJson);
+
+    // Load flashcards.
+
+
+    UserData.overwriteSet(setsList);
   }
 }

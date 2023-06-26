@@ -3,6 +3,7 @@ import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/utils/palette.dart';
 import 'package:flash_study/utils/simple_firebase.dart';
 import 'package:flash_study/utils/simple_preferences.dart';
+import 'package:flash_study/utils/simple_sqflite.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';

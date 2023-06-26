@@ -17,7 +17,6 @@ class FlashcardSet {
 
   // Firebase firestore.
   factory FlashcardSet.firestoreFromJson(Map<String, dynamic> json) {
-    print("=====================================[FLASHCARDSET]=====================================");
     List<Flashcard> loadedCards = List.empty(growable: true);
 
     for (var cardJson in List.of(json["flashcards"])) {

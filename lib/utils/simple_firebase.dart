@@ -18,8 +18,8 @@ class SimpleFirebase {
 
   static DocumentReference<ListOfSets> getSetsFirestore() {
     return FirebaseFirestore.instance.collection("sets").withConverter(
-      fromFirestore: ListOfSets.fromJson,
-      toFirestore: (ListOfSets setList, _) => setList.toJson()
+      fromFirestore: ListOfSets.firestoreFromJson,
+      toFirestore: (ListOfSets setList, _) => setList.firestoreToJson()
     ).doc(FirebaseAuth.instance.currentUser?.uid);
   }
 
