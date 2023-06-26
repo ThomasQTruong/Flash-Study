@@ -39,103 +39,106 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
       body: ProgressHUD(
         child: Builder(
           builder: (context) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                      left: 25.0,
-                      right: 25.0,
-                      bottom: 10.0
-                  ),
-                  child: TextField(
-                    controller: emailController,
-                    obscureText: false,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Email",
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 25.0,
+                        right: 25.0,
+                        bottom: 10.0
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Password",
-                    ),
-                  ),
-                ),
-                displayError(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        final progress = ProgressHUD.of(context);
-                        progress?.show();
-
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passwordController.text,
-                        ).then((value) async {
-                          await SimpleFirebase.loadPreferences();
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                          }
-                        }).catchError((error) {
-                          setState(() => errorMessage = (error as
-                          FirebaseAuthException).message.toString());
-                        });
-
-                        progress?.dismiss();
-                      },
-                      child: const Text(
-                        "Login",
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
+                    child: TextField(
+                      controller: emailController,
+                      obscureText: false,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Email",
                       ),
                     ),
-                    const SizedBox(width: 20),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final progress = ProgressHUD.of(context);
-                        progress?.show();
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: TextField(
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Password",
+                      ),
+                    ),
+                  ),
+                  displayError(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          final progress = ProgressHUD.of(context);
+                          progress?.show();
 
-                        // Create account and then login.
-                        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passwordController.text,
-                        ).then((value) async {
                           await FirebaseAuth.instance.signInWithEmailAndPassword(
                             email: emailController.text,
                             password: passwordController.text,
-                          );
+                          ).then((value) async {
+                            await SimpleFirebase.loadPreferences();
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          }).catchError((error) {
+                            setState(() => errorMessage = (error as
+                            FirebaseAuthException).message.toString());
+                          });
 
-                          // Return to previous page.
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                          }
-                        }).catchError((error) {
-                          setState(() => errorMessage = (error as
-                          FirebaseAuthException).message.toString());
-                        });
-
-                        progress?.dismiss();
-                      },
-                      child: const Text(
-                        "Signup",
-                        style: TextStyle(
-                          fontSize: 16,
+                          progress?.dismiss();
+                        },
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 20),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final progress = ProgressHUD.of(context);
+                          progress?.show();
+
+                          // Create account and then login.
+                          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text,
+                          ).then((value) async {
+                            await FirebaseAuth.instance.signInWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passwordController.text,
+                            );
+
+                            // Return to previous page.
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          }).catchError((error) {
+                            setState(() => errorMessage = (error as
+                            FirebaseAuthException).message.toString());
+                          });
+
+                          progress?.dismiss();
+                        },
+                        child: const Text(
+                          "Signup",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

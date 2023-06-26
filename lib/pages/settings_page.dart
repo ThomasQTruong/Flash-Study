@@ -23,6 +23,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 2.0,
         shadowColor: Theme.of(context).colorScheme.inversePrimary,
