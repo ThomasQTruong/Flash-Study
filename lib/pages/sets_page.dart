@@ -2,6 +2,7 @@ import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/pages/flashcards_page.dart';
 import 'package:flash_study/utils/palette.dart';
+import 'package:flash_study/utils/useful_widgets.dart';
 import 'package:flash_study/utils/simple_sqflite.dart';
 import 'package:flash_study/utils/simple_firebase.dart';
 import 'package:flash_study/pages/settings_page.dart';
@@ -147,7 +148,7 @@ class _SetsPageState extends State<SetsPage> {
 
           setState(() {
             UserData.listOfSets.add(setToAdd);
-            setToAdd.create(front: "test", back: "test");
+            setToAdd.create(front: "test", back: "test3");
             setToAdd.create(front: "test5", back: "test2");
           });
 
@@ -201,31 +202,7 @@ class _SetsPageState extends State<SetsPage> {
         ),
       ],
       tooltip: "Add Set",
-      child: Container(
-        width: 50.0,
-        height: 50.0,
-        decoration: const BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black45,
-              blurRadius: 7.0,
-              offset: Offset(0.0, 2.0),
-            ),
-          ],
-          color: Colors.lightGreen,
-          borderRadius: BorderRadius.all(Radius.circular(100.0)),
-        ),
-        child: const Icon(
-          Icons.add,
-          shadows: <Shadow>[
-            Shadow(
-              color: Colors.black45, blurRadius: 20.0, offset: Offset(0.0, 2.0),
-            ),
-          ],
-          color: Colors.white,
-          size: 50.0,
-        ),
-      ),
+      child: UsefulWidgets.addButtonDesign(),
     );
   }
 
@@ -409,37 +386,39 @@ class _SetsPageState extends State<SetsPage> {
 
   Future<String?> getSetName(String action) => showDialog<String>(
     context: context,
-    builder: (context) => SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
-      child: AlertDialog(
-        title: const Text("Set Name"),
-        surfaceTintColor: Theme.of(context).canvasColor,
-        content: TextField(
-          autofocus: true,
-          decoration: const InputDecoration(hintText: "Enter set name."),
-          controller: controller,
-          onSubmitted: (_) => createSetButton(),
+    builder: (context) => Center(
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: AlertDialog(
+          title: const Text("Set Name"),
+          surfaceTintColor: Theme.of(context).canvasColor,
+          content: TextField(
+            autofocus: true,
+            decoration: const InputDecoration(hintText: "Enter set name."),
+            controller: controller,
+            onSubmitted: (_) => createSetButton(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                "Cancel",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: createSetButton,
+              child: Text(
+                action,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
-              "Cancel",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: createSetButton,
-            child: Text(
-              action,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
       ),
     ),
   );
