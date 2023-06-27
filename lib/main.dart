@@ -43,14 +43,14 @@ class FlashStudyState extends State<FlashStudy>{
 
       title: "Flash Study",
       theme: ThemeData(
-        fontFamily: GoogleFonts.arvo().fontFamily,
+        fontFamily: GoogleFonts.inconsolata().fontFamily,  // GoogleFonts.arvo().fontFamily,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Palette.mainColor,
         ),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
-        fontFamily: GoogleFonts.arvo().fontFamily,
+        fontFamily: GoogleFonts.inconsolata().fontFamily,  // GoogleFonts.arvo().fontFamily,
         colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
       ),

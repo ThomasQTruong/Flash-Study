@@ -72,13 +72,16 @@ class FlashcardSet {
   }
 
 
-  void create({String front = "", String back = ""}) {
-    flashcards.add(Flashcard(
-      flashcardSet: this,
-      index: numberOfCards,
-      front: front,
-      back: back
-    ));
+  Flashcard create({String front = "", String back = ""}) {
+    Flashcard toAdd = Flashcard(
+        flashcardSet: this,
+        index: numberOfCards,
+        front: front,
+        back: back
+    );
+    flashcards.add(toAdd);
     ++numberOfCards;
+
+    return toAdd;
   }
 }

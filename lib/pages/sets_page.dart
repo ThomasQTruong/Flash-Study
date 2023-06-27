@@ -146,12 +146,10 @@ class _SetsPageState extends State<SetsPage> {
           FlashcardSet setToAdd = FlashcardSet(name: setName,
                 index: UserData.getNumberOfSets());
 
-          setState(() {
-            UserData.listOfSets.add(setToAdd);
-            setToAdd.create(front: "test", back: "test3");
-            setToAdd.create(front: "test5", back: "test2");
-          });
+          UserData.listOfSets.add(setToAdd);
+          setState(() {});
 
+          // Save data.
           SimpleFirebase.saveSets();
           SimpleSqflite.addSet(UserData.listOfSets.getLast());
         } else if (value == AddSetMenuItems.import) {
@@ -298,6 +296,7 @@ class _SetsPageState extends State<SetsPage> {
 
   Widget getSetAsCard(int index) {
     return Card(
+      elevation: 5.0,
       child: ListTile(
         onTap: () {
           Navigator.push(

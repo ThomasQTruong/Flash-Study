@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flash_study/objects/flashcard.dart';
 import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/objects/list_of_sets.dart';
 import 'package:flash_study/data/user_data.dart';
@@ -43,6 +44,14 @@ class SimpleSqflite {
     final db = await _getDB();
 
     return await db.insert("Sets", cardSet.sqlToJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+
+  static Future<int> addFlashcard(Flashcard card) async {
+    final db = await _getDB();
+
+    return await db.insert("Flashcards", card.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
