@@ -40,6 +40,7 @@ class SimpleSqflite {
   }
 
 
+  // Functions for sets.
   static Future<int> addSet(FlashcardSet cardSet) async {
     final db = await _getDB();
 
@@ -48,20 +49,12 @@ class SimpleSqflite {
   }
 
 
-  static Future<int> addFlashcard(Flashcard card) async {
-    final db = await _getDB();
-
-    return await db.insert("Flashcards", card.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-  }
-
-
   static Future<int> updateSet(String oldName, FlashcardSet cardSet) async {
     final db = await _getDB();
     return await db.update("Sets", cardSet.sqlToJson(),
-      where: "name = ?",
-      whereArgs: [oldName],
-      conflictAlgorithm: ConflictAlgorithm.replace
+        where: "name = ?",
+        whereArgs: [oldName],
+        conflictAlgorithm: ConflictAlgorithm.replace
     );
   }
 
@@ -79,15 +72,35 @@ class SimpleSqflite {
     final db = await _getDB();
 
     // Load sets.
-    final List<Map<String, dynamic>> listJson = await db.query("Sets");
-    if (listJson.isEmpty) {
+    final List<Map<String, dynamic>> setsJson = await db.query("Sets");
+    final List<Map<String, dynamic>> cardsJson = await db.query("Flashcards");
+    if (setsJson.isEmpty) {
       return;
     }
-    ListOfSets setsList = ListOfSets.sqfliteFromJson(listJson);
+    ListOfSets setsList = ListOfSets.sqfliteFromJson(setsJson, cardsJson);
 
-    // Load flashcards.
+    print(cardsJson);
 
 
     UserData.overwriteSet(setsList);
+  }
+
+
+  // Functions for flashcards.
+  static Future<int> addFlashcard(Flashcard card) async {
+    final db = await _getDB();
+
+    return await db.insert("Flashcards", card.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+
+  static Future<int> updateFlashcard(Flashcard card) async {
+    final db = await _getDB();
+    return await db.update("Flashcards", card.toJson(),
+        where: "setName = ? and cardIndex = ?",
+        whereArgs: [card.flashcardSet?.name, card.index],
+        conflictAlgorithm: ConflictAlgorithm.replace
+    );
   }
 }

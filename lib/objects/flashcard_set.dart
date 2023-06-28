@@ -20,7 +20,7 @@ class FlashcardSet {
     List<Flashcard> loadedCards = List.empty(growable: true);
 
     for (var cardJson in List.of(json["flashcards"])) {
-      loadedCards.add(Flashcard.fromJson(cardJson));
+      loadedCards.add(Flashcard.firestoreFromJson(cardJson));
     }
 
     return FlashcardSet.firestoreLoad(

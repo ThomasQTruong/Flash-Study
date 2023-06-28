@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_study/objects/flashcard_set.dart';
+import 'package:flash_study/objects/flashcard.dart';
 
 class ListOfSets {
   List<FlashcardSet> sets = List.empty(growable: true);
@@ -9,17 +10,27 @@ class ListOfSets {
   ListOfSets.load({required this.sets});
 
 
-  factory ListOfSets.sqfliteFromJson(List<Map<String, dynamic>> listJson) {
+  factory ListOfSets.sqfliteFromJson(List<Map<String, dynamic>> setsJson,
+                                     List<Map<String, dynamic>> cardsJson) {
     List<FlashcardSet> loadedSets = List.empty(growable: true);
 
-    for (var setJson in listJson) {
+    for (var setJson in setsJson) {
       loadedSets.add(FlashcardSet(
         index: setJson["setIndex"],
         name: setJson["name"]
       ));
     }
 
-    return ListOfSets.load(sets: loadedSets);
+    ListOfSets setsList = ListOfSets.load(sets: loadedSets);
+
+    for (var cardJson in cardsJson) {
+      FlashcardSet? cardSet = setsList.getByName(cardJson["setName"]);
+      print(cardJson);
+
+      cardSet?.add(Flashcard.sqlFromJson(cardSet, cardJson));
+    }
+
+    return setsList;
   }
 
 

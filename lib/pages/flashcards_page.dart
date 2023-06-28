@@ -119,19 +119,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           InkWell(
-            onTap: () {
-              _enabledEditing = !_enabledEditing;
-              if (!_enabledEditing) {
-                // Not editing anymore, save user input.
-              _currentFaceFront ? _setLinked.flashcards[_currentIndex].front = _cardController!.text :
-              _setLinked.flashcards[_currentIndex].back = _cardController!.text;
-              } else {
-                // If user is editing, set the current onscreen text into controller.
-                _cardController?.text = _currentFaceFront ? _setLinked.flashcards[_currentIndex].front :
-                _setLinked.flashcards[_currentIndex].back;
-              }
-              setState(() {});
-            },
+            onTap: editButton,
             customBorder: const CircleBorder(),
             child: const Text("Edit"),
           ),
@@ -231,5 +219,22 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
         ),
       ),
     );
+  }
+
+  void editButton() {
+    _enabledEditing = !_enabledEditing;
+    if (!_enabledEditing) {
+      // Not editing anymore, save user input.
+      _currentFaceFront ? _setLinked.flashcards[_currentIndex].front = _cardController!.text :
+      _setLinked.flashcards[_currentIndex].back = _cardController!.text;
+
+      // Save to databases too.
+      SimpleSqflite.updateFlashcard(_setLinked.flashcards[_currentIndex]);
+    } else {
+      // If user is editing, set the current onscreen text into controller.
+      _cardController?.text = _currentFaceFront ? _setLinked.flashcards[_currentIndex].front :
+      _setLinked.flashcards[_currentIndex].back;
+    }
+    setState(() {});
   }
 }

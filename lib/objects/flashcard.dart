@@ -15,12 +15,22 @@ class Flashcard {
                              this.front = "", this.back = ""});
 
 
-  factory Flashcard.fromJson(Map<String, dynamic> json) {
+  factory Flashcard.sqlFromJson(FlashcardSet linkedTo, Map<String, dynamic> json) {
     return Flashcard(
-      flashcardSet: UserData.listOfSets.getByName(json["setName"]),
-      index: json["cardIndex"],
-      front: json["front"],
-      back: json["back"]
+        flashcardSet: linkedTo,
+        index: json["cardIndex"],
+        front: json["front"],
+        back: json["back"]
+    );
+  }
+
+
+  factory Flashcard.firestoreFromJson(Map<String, dynamic> json) {
+    return Flashcard(
+        flashcardSet: UserData.listOfSets.getByName(json["setName"]),
+        index: json["cardIndex"],
+        front: json["front"],
+        back: json["back"]
     );
   }
 
