@@ -40,7 +40,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
         child: Builder(
           builder: (context) => Center(
             child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
+              reverse: true,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
