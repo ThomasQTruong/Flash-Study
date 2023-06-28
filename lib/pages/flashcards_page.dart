@@ -122,13 +122,18 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
             onTap: () {
               _enabledEditing = !_enabledEditing;
               if (!_enabledEditing) {
+                // Not editing anymore, save user input.
               _currentFaceFront ? _setLinked.flashcards[_currentIndex].front = _cardController!.text :
               _setLinked.flashcards[_currentIndex].back = _cardController!.text;
+              } else {
+                // If user is editing, set the current onscreen text into controller.
+                _cardController?.text = _currentFaceFront ? _setLinked.flashcards[_currentIndex].front :
+                _setLinked.flashcards[_currentIndex].back;
               }
               setState(() {});
             },
             customBorder: const CircleBorder(),
-            child: Text("Edit"),
+            child: const Text("Edit"),
           ),
           InkWell(
             onTap: () {
@@ -164,6 +169,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
         // Swiping in left direction: next.
         if (details.primaryVelocity! < 0.0) {
           Feedback.forTap(context);
+          _currentFaceFront = true;
           _currentIndex = (_currentIndex + 1) % _setLinked.flashcards.length;
           setState(() {});
         }
@@ -171,6 +177,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
         // Swiping in right direction: previous.
         if (details.primaryVelocity! > 0.0) {
           Feedback.forTap(context);
+          _currentFaceFront = true;
           _currentIndex = _currentIndex - 1;
           if (_currentIndex < 0) {
             _currentIndex = _setLinked.flashcards.length - 1;
@@ -190,6 +197,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                 left: 8.0, top: _enabledEditing ? 0.0 : 3.0,
               ),
               child: _enabledEditing ? TextField(
+                autofocus: true,
                 controller: _cardController,
                 keyboardType: TextInputType.multiline,
                 maxLines: 8,
