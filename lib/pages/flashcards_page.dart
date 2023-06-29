@@ -10,6 +10,10 @@ import 'package:flash_study/utils/max_lines_formatter.dart';
 import 'package:flash_study/utils/max_length_per_line_formatter.dart';
 
 
+double _flashcardWidth = 450.0;
+double _flashcardHeight = 258.0;
+
+
 late FlashcardSet _setLinked;
 int _currentIndex = 0;
 bool _currentFaceFront = true;
@@ -106,6 +110,34 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SizedBox(
+              width: _flashcardWidth,
+              child: Row(
+                children: [
+                  InkWell(
+                    onTap: editButton,
+                    customBorder: const CircleBorder(),
+                    child: const Icon(Icons.arrow_back, size: 20.0),
+                  ),
+                  InkWell(
+                    onTap: () {},
+                    customBorder: const CircleBorder(),
+                    child: const Icon(Icons.arrow_forward, size: 20.0),
+                  ),
+                  const Spacer(),
+                  InkWell(
+                    onTap: editButton,
+                    customBorder: const CircleBorder(),
+                    child: const Icon(Icons.edit, size: 20.0),
+                  ),
+                  InkWell(
+                    onTap: () {},
+                    customBorder: const CircleBorder(),
+                    child: const Icon(Icons.delete, size: 20.0),
+                  ),
+                ],
+              ),
+            ),
             _setLinked.flashcards.isNotEmpty ? currentFlashcard()
                 : const Text("Empty", style: TextStyle(fontSize: 45.0)),
             Visibility(
@@ -118,15 +150,15 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          // InkWell(
+          //   onTap: editButton,
+          //   customBorder: const CircleBorder(),
+          //   child: const Icon(Icons.edit),
+          // ),
           InkWell(
-            onTap: editButton,
-            customBorder: const CircleBorder(),
-            child: const Text("Edit"),
-          ),
-          InkWell(
-            onTap: () {
+            onTap: () async {
               // Create card and add to SQLite database.
-              SimpleSqflite.addFlashcard(_setLinked.create());
+              await SimpleSqflite.addFlashcard(_setLinked.create());
               setState(() {});
             },
             customBorder: const CircleBorder(),
@@ -176,8 +208,8 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
       child: Card(
         elevation: 5.0,
         child: SizedBox(
-          width: 450.0,
-          height: 258.0,
+          width: _flashcardWidth,
+          height: _flashcardHeight,
           child: SingleChildScrollView(
             physics: const NeverScrollableScrollPhysics(),
             child: Padding(
@@ -188,6 +220,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                 autofocus: true,
                 controller: _cardController,
                 keyboardType: TextInputType.multiline,
+                maxLength: 304,
                 maxLines: 8,
                 style: const TextStyle(
                   fontSize: 20.5,
@@ -199,20 +232,20 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                 ),
                 inputFormatters: [
                   MaxLinesTextInputFormatter(8, () {}),
-                  MaxLengthPerLineFormatter(36, () {}),
+                  // MaxLengthPerLineFormatter(42, () {}),
                 ],
                 decoration: const InputDecoration.collapsed(hintText: ""),
               ) : Text(
-                  _currentFaceFront ? _setLinked.flashcards[_currentIndex].front
-                      : _setLinked.flashcards[_currentIndex].back,
-                  style: const TextStyle(
-                    fontSize: 20.5,
-                    height: 1.5,
-                    letterSpacing: 0.0,
-                    fontFeatures: [
-                      FontFeature.tabularFigures(),
-                    ],
-                  ),
+                _currentFaceFront ? _setLinked.flashcards[_currentIndex].front
+                    : _setLinked.flashcards[_currentIndex].back,
+                style: const TextStyle(
+                  fontSize: 20.5,
+                  height: 1.5,
+                  letterSpacing: 0.0,
+                  fontFeatures: [
+                    FontFeature.tabularFigures(),
+                  ],
+                ),
               ),
             ),
           ),

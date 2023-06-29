@@ -15,9 +15,14 @@ class MaxLinesTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue,
                                     TextEditingValue newValue) {
-    final newLineCount = '\n'.allMatches(newValue.text).length + 1;
+    int numberOfCharacters = ((newValue.text).length);
+    numberOfCharacters += '\n'.allMatches(newValue.text).length * 38;
+    print(numberOfCharacters);
+    int newLineCount = (numberOfCharacters / 38).ceil();
 
     if(newLineCount > maxLines) {
+      print("NO");
+
       onLinesExceeded();
 
       return oldValue;

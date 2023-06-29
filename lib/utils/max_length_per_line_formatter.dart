@@ -14,8 +14,9 @@ class MaxLengthPerLineFormatter extends TextInputFormatter {
 
     if(maxLengthExceeded) {
       onMaxLengthExceeded();
+      TextEditingValue newerValue = TextEditingValue(text: "${oldValue.text}\n${newValue.text[newValue.text.length - 1]}");
 
-      return oldValue;
+      return newerValue;
     }
 
     return newValue;

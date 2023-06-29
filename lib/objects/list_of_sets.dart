@@ -20,12 +20,10 @@ class ListOfSets {
         name: setJson["name"]
       ));
     }
-
     ListOfSets setsList = ListOfSets.load(sets: loadedSets);
 
     for (var cardJson in cardsJson) {
       FlashcardSet? cardSet = setsList.getByName(cardJson["setName"]);
-      print(cardJson);
 
       cardSet?.add(Flashcard.sqlFromJson(cardSet, cardJson));
     }
