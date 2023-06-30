@@ -6,11 +6,9 @@ import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/utils/useful_widgets.dart';
 import 'package:flash_study/utils/simple_sqflite.dart';
-import 'package:flash_study/utils/max_lines_formatter.dart';
-import 'package:flash_study/utils/max_length_per_line_formatter.dart';
 
 
-double _flashcardWidth = 450.0;
+double _flashcardWidth = 450;
 double _flashcardHeight = 258.0;
 
 
@@ -120,7 +118,8 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                     child: const Icon(Icons.arrow_back, size: 20.0),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                    },
                     customBorder: const CircleBorder(),
                     child: const Icon(Icons.arrow_forward, size: 20.0),
                   ),
@@ -211,17 +210,17 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
           width: _flashcardWidth,
           height: _flashcardHeight,
           child: SingleChildScrollView(
-            physics: const NeverScrollableScrollPhysics(),
             child: Padding(
               padding: EdgeInsets.only(
-                left: 8.0, top: _enabledEditing ? 0.0 : 3.0,
+                left: 8.0,
+                right: 2.0,
+                top: _enabledEditing ? 0.0 : 3.0,
               ),
               child: _enabledEditing ? TextField(
                 autofocus: true,
                 controller: _cardController,
                 keyboardType: TextInputType.multiline,
-                maxLength: 304,
-                maxLines: 8,
+                maxLines: 10,
                 style: const TextStyle(
                   fontSize: 20.5,
                   height: 1.5,
@@ -230,10 +229,6 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                     FontFeature.tabularFigures(),
                   ],
                 ),
-                inputFormatters: [
-                  MaxLinesTextInputFormatter(8, () {}),
-                  // MaxLengthPerLineFormatter(42, () {}),
-                ],
                 decoration: const InputDecoration.collapsed(hintText: ""),
               ) : Text(
                 _currentFaceFront ? _setLinked.flashcards[_currentIndex].front
