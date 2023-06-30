@@ -220,12 +220,13 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                 autofocus: true,
                 controller: _cardController,
                 keyboardType: TextInputType.multiline,
-                maxLines: 10,
-                style: const TextStyle(
+                maxLines: null,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.titleLarge?.color,
                   fontSize: 20.5,
                   height: 1.5,
                   letterSpacing: 0.0,
-                  fontFeatures: [
+                  fontFeatures: const [
                     FontFeature.tabularFigures(),
                   ],
                 ),
