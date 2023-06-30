@@ -128,9 +128,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                             if (deleteConfirmed == true) {
                               _setLinked.delete(index: _currentIndex);
                               // Set to default values.
-                              _currentFaceFront = true;
-                              _enabledEditing = false;
-                              _cardController?.clear();
+                              setValuesToDefault();
 
                               // Fix index if needed.
                               if (_currentIndex >= _setLinked.numberOfCards) {
@@ -158,7 +156,21 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                     children: [
                       InkWell(
                         onTap: () {
+                          _setLinked.swap(
+                            cardIndex1: _currentIndex,
+                            cardIndex2: _currentIndex - 1
+                          );
 
+                          // Fix index to stay on moved card.
+                          _currentIndex--;
+                          if (_currentIndex < 0) {
+                            _currentIndex = _setLinked.flashcards.length - 1;
+                          }
+
+                          // Set to default values.
+                          setValuesToDefault();
+
+                          setState(() {});
                         },
                         customBorder: const CircleBorder(),
                         child: const Icon(Icons.arrow_back, size: 20.0),
@@ -166,6 +178,21 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                       Text("${_currentIndex + 1}/${_setLinked.numberOfCards}"),
                       InkWell(
                         onTap: () {
+                          _setLinked.swap(
+                              cardIndex1: _currentIndex,
+                              cardIndex2: _currentIndex + 1
+                          );
+
+                          // Fix index to stay on moved card.
+                          _currentIndex++;
+                          if (_currentIndex >= _setLinked.flashcards.length) {
+                            _currentIndex = 0;
+                          }
+
+                          // Set to default values.
+                          setValuesToDefault();
+
+                          setState(() {});
                         },
                         customBorder: const CircleBorder(),
                         child: const Icon(Icons.arrow_forward, size: 20.0),
@@ -289,6 +316,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
 
       // Save to databases too.
       SimpleSqflite.updateFlashcard(_setLinked.flashcards[_currentIndex]);
+      // TODO: Save to firebase.
     } else {
       // If user is editing, set the current onscreen text into controller.
       _cardController?.text = _currentFaceFront ? _setLinked.flashcards[_currentIndex].front :
@@ -331,4 +359,11 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
         ]
     ),
   );
+
+
+  void setValuesToDefault() {
+    _currentFaceFront = true;
+    _enabledEditing = false;
+    _cardController?.clear();
+  }
 }
