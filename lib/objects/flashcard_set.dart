@@ -84,4 +84,36 @@ class FlashcardSet {
 
     return toAdd;
   }
+
+
+  Flashcard delete({required int index}) {
+    --numberOfCards;
+    return flashcards.removeAt(index);
+  }
+
+
+  void swap({required int cardIndex1, required int cardIndex2}) {
+    // Any cardIndex lower than lower bound, cardIndex = last index.
+    if (cardIndex1 < 0) {
+      cardIndex1 = flashcards.length - 1;
+    }
+    if (cardIndex2 < 0) {
+      cardIndex2 = flashcards.length - 1;
+    }
+    // Any cardIndex higher than higher bound, cardIndex = first index.
+    if (cardIndex1 >= flashcards.length) {
+      cardIndex1 = 0;
+    }
+    if (cardIndex2 >= flashcards.length) {
+      cardIndex2 = 0;
+    }
+    // Indexes are the same, no need to swap.
+    if (cardIndex1 == cardIndex2) {
+      return;
+    }
+
+    Flashcard temp = flashcards[cardIndex1];
+    flashcards[cardIndex1] = flashcards[cardIndex2];
+    flashcards[cardIndex2] = temp;
+  }
 }
