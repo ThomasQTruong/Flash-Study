@@ -44,7 +44,7 @@ class _SetsPageState extends State<SetsPage> {
     controller = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Load settings from Firebase if any.
+      // Load settings from either database if any.
       await SimpleFirebase.loadSets();
       await SimpleSqflite.loadSets();
       setState(() {});

@@ -69,6 +69,12 @@ class SimpleSqflite {
 
 
   static Future<void> loadSets() async {
+    if (!UserData.LOAD_SQLITE) {
+      return;
+    }
+
+    print("LOADING SQLITE SETS!!!");
+
     final db = await _getDB();
 
     // Load sets.
@@ -78,9 +84,6 @@ class SimpleSqflite {
       return;
     }
     ListOfSets setsList = ListOfSets.sqfliteFromJson(setsJson, cardsJson);
-
-    print(cardsJson);
-
 
     UserData.overwriteSet(setsList);
   }

@@ -46,6 +46,12 @@ class SimpleFirebase {
 
 
   static Future<void> loadSets() async {
+    if (!UserData.LOAD_FIRESTORE) {
+      return;
+    }
+
+    print("LOADING FIRESTORE SETS!!!");
+
     // Update Firebase storage if user is logged in.
     if (isLoggedIn()) {
       final docSnap = await getSetsFirestore().get();
@@ -55,6 +61,12 @@ class SimpleFirebase {
 
 
   static Future<void> loadPreferences() async {
+    if (!UserData.LOAD_FIRESTORE) {
+      return;
+    }
+
+    print("LOADING FIRESTORE PREFERENCES!!!");
+
     await getPreferencesFirestore().get().then((docSnapshot) async {
       // Found data in account.
       if (docSnapshot.exists) {
@@ -67,6 +79,12 @@ class SimpleFirebase {
       }
     }).catchError((_) {
       // Something went wrong/data or account doesn't exist; try local.
+      if (!UserData.LOAD_PREFERENCES) {
+        return;
+      }
+
+      print("LOADING PREFERENCES PREFERENCES!!!");
+
       if (SimplePreferences.getDarkMode() != null) {
         UserData.isDarkMode = SimplePreferences.getDarkMode() ?? false;
       }
