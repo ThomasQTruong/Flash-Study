@@ -45,8 +45,10 @@ class _SetsPageState extends State<SetsPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Load settings from either database if any.
+      // TODO: Fix this, if user can load from Firebase, don't load local.
       await SimpleFirebase.loadSets();
       await SimpleSqflite.loadSets();
+      // TODO: save loaded data to SQL if can load from firebase.
       setState(() {});
     });
   }

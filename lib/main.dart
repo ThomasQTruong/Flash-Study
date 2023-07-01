@@ -69,6 +69,7 @@ class FlashStudyState extends State<FlashStudy>{
       // Wait for data to load if any.
       await SimpleFirebase.loadPreferences();
       UserData.updateTheme();
+      // TODO: save preferences to local when loaded from firestore.
 
       // Update app.
       setState(() {});
