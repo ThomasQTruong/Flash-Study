@@ -73,13 +73,17 @@ class SimpleSqflite {
       return;
     }
 
-    print("LOADING SQLITE SETS!!!");
-
     final db = await _getDB();
 
     // Load sets.
-    final List<Map<String, dynamic>> setsJson = await db.query("Sets");
-    final List<Map<String, dynamic>> cardsJson = await db.query("Flashcards");
+    final List<Map<String, dynamic>> setsJson = await db.query(
+      "Sets",
+      orderBy: "setIndex DESC"
+    );
+    final List<Map<String, dynamic>> cardsJson = await db.query(
+      "Flashcards",
+      orderBy: "cardIndex DESC"
+    );
     if (setsJson.isEmpty) {
       return;
     }

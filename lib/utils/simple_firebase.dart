@@ -50,8 +50,6 @@ class SimpleFirebase {
       return;
     }
 
-    print("LOADING FIRESTORE SETS!!!");
-
     // Update Firebase storage if user is logged in.
     if (isLoggedIn()) {
       final docSnap = await getSetsFirestore().get();
@@ -64,8 +62,6 @@ class SimpleFirebase {
     if (!UserData.LOAD_FIRESTORE) {
       return;
     }
-
-    print("LOADING FIRESTORE PREFERENCES!!!");
 
     await getPreferencesFirestore().get().then((docSnapshot) async {
       // Found data in account.
@@ -82,8 +78,6 @@ class SimpleFirebase {
       if (!UserData.LOAD_PREFERENCES) {
         return;
       }
-
-      print("LOADING PREFERENCES PREFERENCES!!!");
 
       if (SimplePreferences.getDarkMode() != null) {
         UserData.isDarkMode = SimplePreferences.getDarkMode() ?? false;
