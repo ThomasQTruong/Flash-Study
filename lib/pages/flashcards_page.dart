@@ -70,7 +70,6 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 2.0,
         shadowColor: Theme
@@ -106,99 +105,95 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
       ),
       body: Builder(
         builder: (context) => Center(
-          child: SingleChildScrollView(
+          child: _setLinked.flashcards.isEmpty
+                     ? const Text("Empty", style: TextStyle(fontSize: 45.0))
+                     : SingleChildScrollView(
+            reverse: true,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Visibility(
-                  visible: _setLinked.flashcards.isNotEmpty,
-                  child: SizedBox(
-                    width: _flashcardWidth,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        InkWell(
-                          onTap: editButton,
-                          customBorder: const CircleBorder(),
-                          child: const Icon(Icons.edit, size: 20.0),
-                        ),
-                        InkWell(
-                          onTap: () async {
-                            final deleteConfirmed = await getDeleteConfirmation();
-                            if (deleteConfirmed == true) {
-                              _setLinked.delete(index: _currentIndex);
-                              // Set to default values.
-                              setValuesToDefault();
-
-                              // Fix index if needed.
-                              if (_currentIndex >= _setLinked.numberOfCards) {
-                                _currentIndex = _setLinked.numberOfCards - 1;
-                              }
-
-                              setState(() {});
-
-                              // TODO: delete from Firestore and SQLite too.
-                            }
-                          },
-                          customBorder: const CircleBorder(),
-                          child: const Icon(Icons.delete, size: 20.0),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                _setLinked.flashcards.isNotEmpty ? currentFlashcard()
-                    : const Text("Empty", style: TextStyle(fontSize: 45.0)),
-                Visibility(
-                  visible: _setLinked.flashcards.isNotEmpty,
+                SizedBox(
+                  width: _flashcardWidth,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       InkWell(
-                        onTap: () {
-                          _setLinked.swap(
-                            cardIndex1: _currentIndex,
-                            cardIndex2: _currentIndex - 1
-                          );
-
-                          // Fix index to stay on moved card.
-                          _currentIndex--;
-                          if (_currentIndex < 0) {
-                            _currentIndex = _setLinked.flashcards.length - 1;
-                          }
-
-                          // Set to default values.
-                          setValuesToDefault();
-
-                          setState(() {});
-                        },
+                        onTap: editButton,
                         customBorder: const CircleBorder(),
-                        child: const Icon(Icons.arrow_back, size: 20.0),
+                        child: const Icon(Icons.edit, size: 20.0),
                       ),
-                      Text("${_currentIndex + 1}/${_setLinked.numberOfCards}"),
                       InkWell(
-                        onTap: () {
-                          _setLinked.swap(
-                              cardIndex1: _currentIndex,
-                              cardIndex2: _currentIndex + 1
-                          );
+                        onTap: () async {
+                          final deleteConfirmed = await getDeleteConfirmation();
+                          if (deleteConfirmed == true) {
+                            _setLinked.delete(index: _currentIndex);
+                            // Set to default values.
+                            setValuesToDefault();
 
-                          // Fix index to stay on moved card.
-                          _currentIndex++;
-                          if (_currentIndex >= _setLinked.flashcards.length) {
-                            _currentIndex = 0;
+                            // Fix index if needed.
+                            if (_currentIndex >= _setLinked.numberOfCards) {
+                              _currentIndex = _setLinked.numberOfCards - 1;
+                            }
+
+                            setState(() {});
+
+                            // TODO: delete from Firestore and SQLite too.
                           }
-
-                          // Set to default values.
-                          setValuesToDefault();
-
-                          setState(() {});
                         },
                         customBorder: const CircleBorder(),
-                        child: const Icon(Icons.arrow_forward, size: 20.0),
+                        child: const Icon(Icons.delete, size: 20.0),
                       ),
                     ],
                   ),
+                ),
+                currentFlashcard(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        _setLinked.swap(
+                          cardIndex1: _currentIndex,
+                          cardIndex2: _currentIndex - 1
+                        );
+
+                        // Fix index to stay on moved card.
+                        _currentIndex--;
+                        if (_currentIndex < 0) {
+                          _currentIndex = _setLinked.flashcards.length - 1;
+                        }
+
+                        // Set to default values.
+                        setValuesToDefault();
+
+                        setState(() {});
+                      },
+                      customBorder: const CircleBorder(),
+                      child: const Icon(Icons.arrow_back, size: 20.0),
+                    ),
+                    Text("${_currentIndex + 1}/${_setLinked.numberOfCards}"),
+                    InkWell(
+                      onTap: () {
+                        _setLinked.swap(
+                            cardIndex1: _currentIndex,
+                            cardIndex2: _currentIndex + 1
+                        );
+
+                        // Fix index to stay on moved card.
+                        _currentIndex++;
+                        if (_currentIndex >= _setLinked.flashcards.length) {
+                          _currentIndex = 0;
+                        }
+
+                        // Set to default values.
+                        setValuesToDefault();
+
+                        setState(() {});
+                      },
+                      customBorder: const CircleBorder(),
+                      child: const Icon(Icons.arrow_forward, size: 20.0),
+                    ),
+                  ],
                 ),
               ],
             ),

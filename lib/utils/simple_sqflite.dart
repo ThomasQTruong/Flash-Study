@@ -39,11 +39,22 @@ class SimpleSqflite {
     );
   }
 
+
   static Future<void> clearDatabase() async {
     final db = await _getDB();
 
     await db.execute("DELETE FROM Flashcards");
     await db.execute("DELETE FROM Sets");
+  }
+
+
+  static Future<void> addAll() async {
+    for (FlashcardSet set in UserData.listOfSets.sets) {
+      await addSet(set);
+      for (Flashcard card in set.flashcards) {
+        await addFlashcard(card);
+      }
+    }
   }
 
 

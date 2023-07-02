@@ -77,7 +77,6 @@ class _SetsPageState extends State<SetsPage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 2.0,
         shadowColor: Theme.of(context).colorScheme.inversePrimary,
@@ -109,7 +108,6 @@ class _SetsPageState extends State<SetsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(onPressed: () {SimpleSqflite.clearDatabase();}, child: Text("MEOW")),
             Expanded(
               child: UserData.listOfSets.isEmpty() ? const Center(
                 child: Text(
@@ -160,8 +158,8 @@ class _SetsPageState extends State<SetsPage> {
           setState(() {});
 
           // Save data.
-          SimpleFirebase.saveSets();
-          SimpleSqflite.addSet(UserData.listOfSets.getLast());
+          await SimpleFirebase.saveSets();
+          await SimpleSqflite.addSet(UserData.listOfSets.getLast());
         } else if (value == AddSetMenuItems.import) {
           final result = await FilePicker.platform.pickFiles();
           if (result == null) {
@@ -397,7 +395,7 @@ class _SetsPageState extends State<SetsPage> {
     context: context,
     builder: (context) => Center(
       child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
+        // physics: const NeverScrollableScrollPhysics(),
         child: AlertDialog(
           title: const Text("Set Name"),
           surfaceTintColor: Theme.of(context).canvasColor,
