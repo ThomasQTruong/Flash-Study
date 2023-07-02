@@ -44,11 +44,18 @@ class _SetsPageState extends State<SetsPage> {
     controller = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Load settings from either database if any.
-      // TODO: Fix this, if user can load from Firebase, don't load local.
-      await SimpleFirebase.loadSets();
-      await SimpleSqflite.loadSets();
-      // TODO: save loaded data to SQL if can load from firebase.
+      // Logged in, load from Firestore.
+      if (SimpleFirebase.isLoggedIn()) {
+        await SimpleFirebase.loadSets();
+
+        // Sync loaded data with SQLite.
+        print("SYNCING WITH SQLITE=========================================");
+        // SimpleSqflite.
+      } else {
+        // Not logged in, load from SQLite.
+        await SimpleSqflite.loadSets();
+      }
+
       setState(() {});
     });
   }
@@ -102,6 +109,7 @@ class _SetsPageState extends State<SetsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            ElevatedButton(onPressed: () {SimpleSqflite.clearDatabase();}, child: Text("MEOW")),
             Expanded(
               child: UserData.listOfSets.isEmpty() ? const Center(
                 child: Text(

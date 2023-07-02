@@ -263,42 +263,42 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
       },
       child: Card(
         elevation: 5.0,
-        child: Container(
+        child: SizedBox(
           width: _flashcardWidth,
           height: _flashcardHeight,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.only(
-            left: 8.0,
-            right: 2.0,
-            bottom: 6.0,
-            top: 4.0
-          ),
           child: SingleChildScrollView(
-            child: _enabledEditing ? TextField(
-              autofocus: true,
-              controller: _cardController,
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              style: TextStyle(
-                color: Theme.of(context).textTheme.titleLarge?.color,
-                fontSize: 20.5,
-                height: 1.5,
-                letterSpacing: 0.0,
-                fontFeatures: const [
-                  FontFeature.tabularFigures(),
-                ],
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: 8.0,
+                right: 2.0,
+                top: _enabledEditing ? 0.0 : 3.0,
               ),
-              decoration: const InputDecoration.collapsed(hintText: ""),
-            ) : Text(
+              child: _enabledEditing ? TextField(
+                autofocus: true,
+                controller: _cardController,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.titleLarge?.color,
+                  fontSize: 20.5,
+                  height: 1.5,
+                  letterSpacing: 0.0,
+                  fontFeatures: const [
+                    FontFeature.tabularFigures(),
+                  ],
+                ),
+                decoration: const InputDecoration.collapsed(hintText: ""),
+              ) : Text(
                 _currentFaceFront ? _setLinked.flashcards[_currentIndex].front
                     : _setLinked.flashcards[_currentIndex].back,
-              style: const TextStyle(
-                fontSize: 20.5,
-                height: 1.5,
-                letterSpacing: 0.0,
-                fontFeatures: [
-                  FontFeature.tabularFigures(),
-                ],
+                style: const TextStyle(
+                  fontSize: 20.5,
+                  height: 1.5,
+                  letterSpacing: 0.0,
+                  fontFeatures: [
+                    FontFeature.tabularFigures(),
+                  ],
+                ),
               ),
             ),
           ),

@@ -39,6 +39,13 @@ class SimpleSqflite {
     );
   }
 
+  static Future<void> clearDatabase() async {
+    final db = await _getDB();
+
+    await db.execute("DELETE FROM Flashcards");
+    await db.execute("DELETE FROM Sets");
+  }
+
 
   // Functions for sets.
   static Future<int> addSet(FlashcardSet cardSet) async {
@@ -78,11 +85,11 @@ class SimpleSqflite {
     // Load sets.
     final List<Map<String, dynamic>> setsJson = await db.query(
       "Sets",
-      orderBy: "setIndex DESC"
+      orderBy: "setIndex ASC"
     );
     final List<Map<String, dynamic>> cardsJson = await db.query(
       "Flashcards",
-      orderBy: "cardIndex DESC"
+      orderBy: "cardIndex ASC"
     );
     if (setsJson.isEmpty) {
       return;
