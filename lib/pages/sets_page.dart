@@ -341,6 +341,7 @@ class _SetsPageState extends State<SetsPage> {
               index > 0 ? InkWell(
                 onTap: () => setState(() {
                   UserData.listOfSets.moveSetUpAt(index);
+                  // TODO: Update databases when moving up.
                 }),
                 child: const Icon(Icons.arrow_upward),
               ) : const Opacity(
@@ -352,6 +353,7 @@ class _SetsPageState extends State<SetsPage> {
               index < UserData.listOfSets.length() - 1 ? InkWell(
                 onTap: () => setState(() {
                   UserData.listOfSets.moveSetDownAt(index);
+                  // TODO: Update databases when moving down.
                 }),
                 child: const Icon(Icons.arrow_downward),
               ) : const Opacity(
