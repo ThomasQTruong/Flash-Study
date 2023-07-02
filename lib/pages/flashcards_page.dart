@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flash_study/utils/simple_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_study/pages/settings_page.dart';
 import 'package:flash_study/objects/flashcard_set.dart';
@@ -130,6 +131,8 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                             // Set to default values.
                             setValuesToDefault();
 
+                            _setLinked.updateIndexes(_currentIndex);
+
                             // Fix index if needed.
                             if (_currentIndex >= _setLinked.numberOfCards) {
                               _currentIndex = _setLinked.numberOfCards - 1;
@@ -137,7 +140,9 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
 
                             setState(() {});
 
-                            // TODO: delete from Firestore and SQLite too.
+                            // Update deletion in Firestore and SQLite.
+                            await SimpleFirebase.saveSets();
+                            await SimpleSqflite.deleteCard(_setLinked, _currentIndex);
                           }
                         },
                         customBorder: const CircleBorder(),
@@ -151,11 +156,17 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     InkWell(
-                      onTap: () {
+                      onTap: () async {
                         _setLinked.swap(
                           cardIndex1: _currentIndex,
                           cardIndex2: _currentIndex - 1
                         );
+
+                        // Swap in databases.
+                        // TODO: Swap in Firestore.
+                        await SimpleSqflite.swapCards(_setLinked, _currentIndex,
+                                                             _currentIndex - 1);
+
 
                         // Fix index to stay on moved card.
                         _currentIndex--;
@@ -173,11 +184,16 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                     ),
                     Text("${_currentIndex + 1}/${_setLinked.numberOfCards}"),
                     InkWell(
-                      onTap: () {
+                      onTap: () async {
                         _setLinked.swap(
                             cardIndex1: _currentIndex,
                             cardIndex2: _currentIndex + 1
                         );
+
+                        // Swap in databases.
+                        // TODO: Swap in Firestore.
+                        await SimpleSqflite.swapCards(_setLinked, _currentIndex,
+                                                             _currentIndex + 1);
 
                         // Fix index to stay on moved card.
                         _currentIndex++;
@@ -302,7 +318,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
     );
   }
 
-  void editButton() {
+  Future<void> editButton() async {
     _enabledEditing = !_enabledEditing;
     if (!_enabledEditing) {
       // Not editing anymore, save user input.
@@ -310,8 +326,8 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
       _setLinked.flashcards[_currentIndex].back = _cardController!.text;
 
       // Save to databases too.
-      SimpleSqflite.updateFlashcard(_setLinked.flashcards[_currentIndex]);
-      // TODO: Save to firebase.
+      await SimpleFirebase.saveSets();
+      await SimpleSqflite.updateFlashcard(_setLinked.flashcards[_currentIndex]);
     } else {
       // If user is editing, set the current onscreen text into controller.
       _cardController?.text = _currentFaceFront ? _setLinked.flashcards[_currentIndex].front :

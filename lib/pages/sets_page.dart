@@ -49,8 +49,8 @@ class _SetsPageState extends State<SetsPage> {
         await SimpleFirebase.loadSets();
 
         // Sync loaded data with SQLite.
-        print("SYNCING WITH SQLITE=========================================");
-        // SimpleSqflite.
+        await SimpleSqflite.clearDatabase();
+        await SimpleSqflite.addAll();
       } else {
         // Not logged in, load from SQLite.
         await SimpleSqflite.loadSets();
@@ -314,7 +314,9 @@ class _SetsPageState extends State<SetsPage> {
                 title: UserData.listOfSets.getNameAt(index),
               ),
             ),
-          );
+          ).then((_) {
+            setState(() {});
+          });
         },
         // Set name.
         title: Text(

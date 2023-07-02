@@ -95,16 +95,16 @@ class FlashcardSet {
   void swap({required int cardIndex1, required int cardIndex2}) {
     // Any cardIndex lower than lower bound, cardIndex = last index.
     if (cardIndex1 < 0) {
-      cardIndex1 = flashcards.length - 1;
+      cardIndex1 = numberOfCards - 1;
     }
     if (cardIndex2 < 0) {
-      cardIndex2 = flashcards.length - 1;
+      cardIndex2 = numberOfCards - 1;
     }
     // Any cardIndex higher than higher bound, cardIndex = first index.
-    if (cardIndex1 >= flashcards.length) {
+    if (cardIndex1 >= numberOfCards) {
       cardIndex1 = 0;
     }
-    if (cardIndex2 >= flashcards.length) {
+    if (cardIndex2 >= numberOfCards) {
       cardIndex2 = 0;
     }
     // Indexes are the same, no need to swap.
@@ -113,7 +113,24 @@ class FlashcardSet {
     }
 
     Flashcard temp = flashcards[cardIndex1];
+    // Swap indexes.
+    temp.index = cardIndex2;
+    flashcards[cardIndex2].index = cardIndex1;
+    // Swap sets.
     flashcards[cardIndex1] = flashcards[cardIndex2];
     flashcards[cardIndex2] = temp;
+  }
+
+
+  void updateIndexes(int deletedIndex) {
+    // Deleted item was the last item, nothing to fix.
+    if (deletedIndex >= numberOfCards) {
+      return;
+    }
+
+    // Update indexes of every item after deleted index.
+    for (int i = deletedIndex; i < numberOfCards; ++i) {
+      flashcards[i].index = i;
+    }
   }
 }

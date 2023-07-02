@@ -86,6 +86,25 @@ class SimpleSqflite {
   }
 
 
+  static Future<void> updateCardsIndex(FlashcardSet set, int deletedAt) async {
+    // Deleted index was the last item, nothing to fix.
+    if (deletedAt >= set.numberOfCards) {
+      return;
+    }
+
+    final db = await _getDB();
+    int? numberOfCards = set.numberOfCards;
+
+    // Update every index after the deleted index.
+    for (int i = deletedAt; i < numberOfCards; ++i) {
+      db.update("Flashcards", set.flashcards[i].toJson(),
+        where: "cardIndex = ? and setName = ?",
+        whereArgs: [i + 1, set.name]
+      );
+    }
+  }
+
+
   static Future<void> loadSets() async {
     if (!UserData.LOAD_SQLITE) {
       return;
@@ -127,5 +146,46 @@ class SimpleSqflite {
         whereArgs: [card.flashcardSet?.name, card.index],
         conflictAlgorithm: ConflictAlgorithm.replace
     );
+  }
+
+
+  static Future<int> deleteCard(FlashcardSet set, int index) async {
+    final db = await _getDB();
+
+    int result = await db.delete("Flashcards",
+        where: "cardIndex = ? and setName = ?",
+        whereArgs: [index, set.name]
+    );
+
+    // Update indexes.
+    updateCardsIndex(set, index);
+
+    return result;
+  }
+
+
+  static Future<void> swapCards(FlashcardSet set,
+           int cardIndex1, int cardIndex2) async {
+    // Any cardIndex lower than lower bound, cardIndex = last index.
+    if (cardIndex1 < 0) {
+      cardIndex1 = set.numberOfCards - 1;
+    }
+    if (cardIndex2 < 0) {
+      cardIndex2 = set.numberOfCards - 1;
+    }
+    // Any cardIndex higher than higher bound, cardIndex = first index.
+    if (cardIndex1 >= set.numberOfCards) {
+      cardIndex1 = 0;
+    }
+    if (cardIndex2 >= set.numberOfCards) {
+      cardIndex2 = 0;
+    }
+    // Indexes are the same, no need to swap.
+    if (cardIndex1 == cardIndex2) {
+      return;
+    }
+
+    updateFlashcard(set.flashcards[cardIndex1]);
+    updateFlashcard(set.flashcards[cardIndex2]);
   }
 }
