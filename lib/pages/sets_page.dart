@@ -237,7 +237,10 @@ class _SetsPageState extends State<SetsPage> {
 
           String oldName = UserData.listOfSets.getNameAt(index);
           setState(() => UserData.listOfSets.setNameAt(index, setName));
-          SimpleSqflite.updateSetName(oldName,
+
+          // Update in databases.
+          await SimpleFirebase.saveSets();
+          await SimpleSqflite.updateSetName(oldName,
                                       UserData.listOfSets.getAt(index));
         } else if (value == MoreActionsMenuItems.export) {
           // TODO: code export.
@@ -245,7 +248,13 @@ class _SetsPageState extends State<SetsPage> {
         else if (value == MoreActionsMenuItems.delete) {
           final deleteConfirmed = await getDeleteConfirmation(index);
           if (deleteConfirmed == true) {
-            setState(() => UserData.listOfSets.removeAt(index));
+            FlashcardSet removed = UserData.listOfSets.removeAt(index);
+            UserData.listOfSets.updateIndexes(index);
+            setState(() {});
+
+            // Update in databases.
+            await SimpleFirebase.saveSets();
+            await SimpleSqflite.deleteSet(removed);
           }
         }
       },

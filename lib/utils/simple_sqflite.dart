@@ -87,29 +87,36 @@ class SimpleSqflite {
   }
 
 
-  static Future<int> deleteSet(String nameOfSetToDelete) async {
+  static Future<int> deleteSet(FlashcardSet deletedSet) async {
     final db = await _getDB();
-    return await db.delete("Sets",
+
+    int result =  await db.delete("Sets",
         where: "name = ?",
-        whereArgs: [nameOfSetToDelete]
+        whereArgs: [deletedSet.name]
     );
+
+    // Update indexes.
+    updateSetsIndex(deletedSet.index!);
+
+    return result;
   }
 
 
-  static Future<void> updateCardsIndex(FlashcardSet set, int deletedAt) async {
+  static Future<void> updateSetsIndex(int deletedAt) async {
+    int? numberOfSets = UserData.listOfSets.length();
+
     // Deleted index was the last item, nothing to fix.
-    if (deletedAt >= set.numberOfCards) {
+    if (deletedAt >= numberOfSets) {
       return;
     }
 
     final db = await _getDB();
-    int? numberOfCards = set.numberOfCards;
 
     // Update every index after the deleted index.
-    for (int i = deletedAt; i < numberOfCards; ++i) {
-      db.update("Flashcards", set.flashcards[i].toJson(),
-        where: "cardIndex = ? and setName = ?",
-        whereArgs: [i + 1, set.name]
+    for (int i = deletedAt; i < numberOfSets; ++i) {
+      db.update("Sets", UserData.listOfSets.sets[i].sqlToJson(),
+        where: "setIndex = ?",
+        whereArgs: [i + 1]
       );
     }
   }
@@ -223,5 +230,25 @@ class SimpleSqflite {
 
     updateFlashcard(set.flashcards[cardIndex1]);
     updateFlashcard(set.flashcards[cardIndex2]);
+  }
+
+
+  static Future<void> updateCardsIndex(FlashcardSet set, int deletedAt) async {
+    int? numberOfCards = set.numberOfCards;
+
+    // Deleted index was the last item, nothing to fix.
+    if (deletedAt >= numberOfCards) {
+      return;
+    }
+
+    final db = await _getDB();
+
+    // Update every index after the deleted index.
+    for (int i = deletedAt; i < numberOfCards; ++i) {
+      db.update("Flashcards", set.flashcards[i].toJson(),
+          where: "cardIndex = ? and setName = ?",
+          whereArgs: [i + 1, set.name]
+      );
+    }
   }
 }

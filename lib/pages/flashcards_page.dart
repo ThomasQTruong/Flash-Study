@@ -221,7 +221,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
         children: [
           InkWell(
             onTap: () async {
-              // Create card and add to SQLite database.
+              // Create card and update databases.
               await SimpleFirebase.saveSets();
               await SimpleSqflite.addFlashcard(_setLinked.create());
               setState(() {});

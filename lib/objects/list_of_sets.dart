@@ -162,4 +162,17 @@ class ListOfSets {
     }
     return false;
   }
+
+
+  void updateIndexes(int deletedIndex) {
+    // Deleted item was the last item, nothing to fix.
+    if (deletedIndex >= length()) {
+      return;
+    }
+
+    // Update indexes of every item after deleted index.
+    for (int i = deletedIndex; i < length(); ++i) {
+      sets[i].index = i;
+    }
+  }
 }
