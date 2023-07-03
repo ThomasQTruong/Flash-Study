@@ -42,15 +42,17 @@ class FlashcardSet {
   factory FlashcardSet.firestoreFromJson(Map<String, dynamic> json) {
     List<Flashcard> loadedCards = List.empty(growable: true);
 
+    FlashcardSet loadedSet = FlashcardSet.firestoreLoad(
+        index: json["setIndex"],
+        name: json["name"],
+        flashcards: loadedCards
+    );
+
     for (var cardJson in List.of(json["flashcards"])) {
-      loadedCards.add(Flashcard.firestoreFromJson(cardJson));
+      loadedSet.add(Flashcard.firestoreFromJson(cardJson, loadedSet));
     }
 
-    return FlashcardSet.firestoreLoad(
-      index: json["setIndex"],
-      name: json["name"],
-      flashcards: loadedCards
-    );
+    return loadedSet;
   }
 
 

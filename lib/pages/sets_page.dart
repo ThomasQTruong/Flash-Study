@@ -111,7 +111,9 @@ class _SetsPageState extends State<SetsPage> {
                     MaterialPageRoute(
                       builder: (context) => const SettingsPage(title: "Settings")
                     ),
-                  );
+                  ).then((_) {
+                    setState(() {});
+                  });
                 },
               ),
             ],
@@ -563,7 +565,7 @@ class _SetsPageState extends State<SetsPage> {
 
     // Load flashcards.
     for (var cardJson in List.of(json["flashcards"])) {
-      set.add(Flashcard.firestoreFromJson(cardJson));
+      set.add(Flashcard.importFromJson(cardJson));
     }
 
     setState(() {});

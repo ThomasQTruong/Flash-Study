@@ -86,7 +86,7 @@ class SimpleFirebase {
         // Set does not current exist (judged by name).
         if (!UserData.listOfSets.hasSetNamed(set.name)) {
           // Add to local data.
-          UserData.listOfSets.add(set);
+          await UserData.listOfSets.add(set);
         }
       }
     }

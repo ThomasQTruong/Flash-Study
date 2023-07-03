@@ -25,7 +25,17 @@ class Flashcard {
   }
 
 
-  factory Flashcard.firestoreFromJson(Map<String, dynamic> json) {
+  factory Flashcard.firestoreFromJson(Map<String, dynamic> json, FlashcardSet setLinked) {
+    return Flashcard(
+        flashcardSet: setLinked,
+        index: json["cardIndex"],
+        front: json["front"],
+        back: json["back"]
+    );
+  }
+
+
+  factory Flashcard.importFromJson(Map<String, dynamic> json) {
     return Flashcard(
         flashcardSet: UserData.listOfSets.getByName(json["setName"]),
         index: json["cardIndex"],
