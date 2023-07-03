@@ -11,7 +11,6 @@ import 'package:flash_study/utils/simple_firebase.dart';
 import 'package:flash_study/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -167,20 +166,14 @@ class _SetsPageState extends State<SetsPage> {
           await SimpleFirebase.saveSets();
           await SimpleSqflite.addSet(UserData.listOfSets.getLast());
         } else if (value == AddSetMenuItems.import) {
-          final result = await FilePicker.platform.pickFiles();
-          if (result == null) {
-            displayMessage("Import cancelled.");
+          FlashcardSet? importedSet = await importPressed();
+          if (importedSet == null) {
             return;
           }
 
-          final file = result.files.first;
-          if (file.extension != "json") {
-            displayMessage("Imported file is invalid.");
-            return;
-          }
-          OpenFile.open(file.path);
-
-          // TODO: import set.
+          // Save to databases.
+          await SimpleFirebase.saveSets();
+          await SimpleSqflite.addSet(importedSet);
         }
       },
       itemBuilder: (context) => [
@@ -515,5 +508,35 @@ class _SetsPageState extends State<SetsPage> {
       subject: "${set.name}.json",
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
+  }
+
+  Future<FlashcardSet?> importPressed() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result == null) {
+      displayMessage("Import cancelled.");
+      return null;
+    }
+
+    final file = result.files.first;
+    if (file.extension != "json") {
+      displayMessage("Imported file is invalid.");
+      return null;
+    }
+    final fileConverted = File(file.path.toString());
+    String jsonString = await fileConverted.readAsString();
+    Map<String, dynamic> json = await jsonDecode(jsonString);
+
+    if (UserData.listOfSets.hasSetNamed(json["name"])) {
+      displayMessage("${json["name"]} already exists.");
+      return null;
+    }
+
+    FlashcardSet set = FlashcardSet.importFromJson(json);
+
+    await UserData.listOfSets.add(set);
+
+    setState(() {});
+
+    return set;
   }
 }

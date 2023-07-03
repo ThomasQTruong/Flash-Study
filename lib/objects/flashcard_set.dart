@@ -1,6 +1,5 @@
 import 'package:flash_study/objects/flashcard.dart';
 import 'package:flash_study/data/user_data.dart';
-import 'package:flash_study/objects/list_of_sets.dart';
 
 /// flashcard_set.dart
 ///
@@ -15,9 +14,12 @@ class FlashcardSet {
   FlashcardSet({required this.index, required this.name});
   FlashcardSet.importLoad({required this.name, required this.flashcards}) {
     index = UserData.listOfSets.length();
+    numberOfCards = flashcards.length;
   }
   FlashcardSet.firestoreLoad({required this.index, required this.name,
-                              required this.numberOfCards, required this.flashcards});
+                                                   required this.flashcards}) {
+    numberOfCards = flashcards.length;
+  }
 
   // File import/export.
   Map<String, dynamic> exportToJson() => {
@@ -51,7 +53,6 @@ class FlashcardSet {
     return FlashcardSet.firestoreLoad(
       index: json["setIndex"],
       name: json["name"],
-      numberOfCards: loadedCards.length,
       flashcards: loadedCards
     );
   }
