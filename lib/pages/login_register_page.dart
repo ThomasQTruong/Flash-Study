@@ -99,13 +99,14 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                             FirebaseAuthException).message.toString());
                           });
 
+                          // Load/merge data from Firestore with local.
                           await SimpleFirebase.loginLoadSets();
-                          progress?.dismiss();
 
                           // Re-sync with databases.
-                          SimpleFirebase.saveSets();
-                          SimpleSqflite.clearDatabase();
-                          SimpleSqflite.addAll();
+                          await SimpleFirebase.saveSets();
+                          await SimpleSqflite.clearDatabase();
+                          await SimpleSqflite.addAll();
+                          progress?.dismiss();
                         },
                         child: const Text(
                           "Login",

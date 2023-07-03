@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/pages/flashcards_page.dart';
@@ -9,6 +12,9 @@ import 'package:flash_study/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+
 
 enum AddSetMenuItems {
   create,
@@ -245,7 +251,7 @@ class _SetsPageState extends State<SetsPage> {
           await SimpleSqflite.updateSetName(oldName,
                                       UserData.listOfSets.getAt(index));
         } else if (value == MoreActionsMenuItems.export) {
-          // TODO: export set.
+          exportPressed(UserData.listOfSets.getAt(index));
         }
         else if (value == MoreActionsMenuItems.delete) {
           final deleteConfirmed = await getDeleteConfirmation(index);
@@ -493,5 +499,21 @@ class _SetsPageState extends State<SetsPage> {
     Navigator.of(context).pop(controller.text);
 
     controller.clear();
+  }
+
+
+  Future<void> exportPressed(FlashcardSet set) async {
+    final box = context.findRenderObject() as RenderBox?;
+    final temp = await getTemporaryDirectory();
+    final path = "${temp.path}/${set.name}.json";
+    var jsonEncoder = JsonEncoder.withIndent(" " * 4);
+    await File(path).writeAsString(jsonEncoder.convert(set.firestoreToJson())
+                                                                   .toString());
+
+    await Share.shareXFiles(
+      [XFile(path)],
+      subject: set.name,
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
   }
 }
