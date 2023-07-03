@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/data/user_data.dart';
-import 'package:flash_study/objects/list_of_sets.dart';
 import 'package:flash_study/pages/flashcards_page.dart';
 import 'package:flash_study/utils/palette.dart';
 import 'package:flash_study/utils/useful_widgets.dart';
@@ -103,7 +102,6 @@ class _SetsPageState extends State<SetsPage> {
             ),
             centerTitle: true,
             actions: <Widget>[
-              ElevatedButton(onPressed: () {SimpleSqflite.clearDatabase();}, child: Text("CLEAR")),
               // Settings button.
               IconButton(
                 icon: const Icon(Icons.settings),
