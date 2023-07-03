@@ -66,13 +66,13 @@ class FlashcardSet {
 
 
   // Regular functions.
-  void add(Flashcard card) {
+  Future<void> add(Flashcard card) async {
     flashcards.add(card);
     ++numberOfCards;
   }
 
 
-  Flashcard create({String front = "", String back = ""}) {
+  Future<Flashcard> create({String front = "", String back = ""}) async {
     Flashcard toAdd = Flashcard(
         flashcardSet: this,
         index: numberOfCards,
@@ -86,13 +86,13 @@ class FlashcardSet {
   }
 
 
-  Flashcard delete({required int index}) {
+  Future<Flashcard> delete({required int index}) async {
     --numberOfCards;
     return flashcards.removeAt(index);
   }
 
 
-  void swap({required int cardIndex1, required int cardIndex2}) {
+  Future<void> swap({required int cardIndex1, required int cardIndex2}) async {
     // Any cardIndex lower than lower bound, cardIndex = last index.
     if (cardIndex1 < 0) {
       cardIndex1 = numberOfCards - 1;
@@ -122,7 +122,7 @@ class FlashcardSet {
   }
 
 
-  void updateIndexes(int deletedIndex) {
+  Future<void> updateIndexes(int deletedIndex) async {
     // Deleted item was the last item, nothing to fix.
     if (deletedIndex >= numberOfCards) {
       return;

@@ -65,7 +65,7 @@ class ListOfSets {
   }
 
 
-  void add(FlashcardSet cardSet) {
+  Future<void> add(FlashcardSet cardSet) async {
     sets.add(cardSet);
   }
 
@@ -111,12 +111,12 @@ class ListOfSets {
   }
 
 
-  FlashcardSet removeAt(int index) {
+  Future<FlashcardSet> removeAt(int index) async {
     return sets.removeAt(index);
   }
 
 
-  bool moveSetUpAt(int index) {
+  Future<bool> moveSetUpAt(int index) async {
     // First set, cannot move any higher.
     if (index <= 0) {
       return false;
@@ -135,7 +135,7 @@ class ListOfSets {
   }
 
 
-  bool moveSetDownAt(int index) {
+  Future<bool> moveSetDownAt(int index) async {
     // Last set, cannot move any lower.
     if (index >= length() - 1) {
       return false;
@@ -164,7 +164,7 @@ class ListOfSets {
   }
 
 
-  void updateIndexes(int deletedIndex) {
+  Future<void> updateIndexes(int deletedIndex) async {
     // Deleted item was the last item, nothing to fix.
     if (deletedIndex >= length()) {
       return;

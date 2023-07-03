@@ -92,6 +92,9 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                             FirebaseAuthException).message.toString());
                           });
 
+
+                          await SimpleFirebase.loginLoadSets();
+
                           progress?.dismiss();
                         },
                         child: const Text(
@@ -116,6 +119,9 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                               email: emailController.text,
                               password: passwordController.text,
                             );
+
+                            // Save current sets to freshly created account.
+                            await SimpleFirebase.saveSets();
 
                             // Return to previous page.
                             if (context.mounted) {

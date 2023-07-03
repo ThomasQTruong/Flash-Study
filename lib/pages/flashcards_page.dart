@@ -3,6 +3,7 @@ import 'package:flash_study/utils/simple_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_study/pages/settings_page.dart';
 import 'package:flash_study/objects/flashcard_set.dart';
+import 'package:flash_study/objects/flashcard.dart';
 import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/utils/useful_widgets.dart';
 import 'package:flash_study/utils/simple_sqflite.dart';
@@ -127,11 +128,11 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                         onTap: () async {
                           final deleteConfirmed = await getDeleteConfirmation();
                           if (deleteConfirmed == true) {
-                            _setLinked.delete(index: _currentIndex);
+                            await _setLinked.delete(index: _currentIndex);
                             // Set to default values.
                             setValuesToDefault();
 
-                            _setLinked.updateIndexes(_currentIndex);
+                            await _setLinked.updateIndexes(_currentIndex);
 
                             // Fix index if needed.
                             if (_currentIndex >= _setLinked.numberOfCards) {
@@ -157,7 +158,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                   children: [
                     InkWell(
                       onTap: () async {
-                        _setLinked.swap(
+                        await _setLinked.swap(
                           cardIndex1: _currentIndex,
                           cardIndex2: _currentIndex - 1
                         );
@@ -185,7 +186,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                     Text("${_currentIndex + 1}/${_setLinked.numberOfCards}"),
                     InkWell(
                       onTap: () async {
-                        _setLinked.swap(
+                        await _setLinked.swap(
                             cardIndex1: _currentIndex,
                             cardIndex2: _currentIndex + 1
                         );
@@ -221,9 +222,12 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
         children: [
           InkWell(
             onTap: () async {
+              Flashcard cardCreated = await _setLinked.create();
+
               // Create card and update databases.
               await SimpleFirebase.saveSets();
-              await SimpleSqflite.addFlashcard(_setLinked.create());
+              await SimpleSqflite.addFlashcard(cardCreated);
+
               setState(() {});
             },
             customBorder: const CircleBorder(),

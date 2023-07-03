@@ -154,7 +154,7 @@ class _SetsPageState extends State<SetsPage> {
           FlashcardSet setToAdd = FlashcardSet(name: setName,
                 index: UserData.getNumberOfSets());
 
-          UserData.listOfSets.add(setToAdd);
+          await UserData.listOfSets.add(setToAdd);
           setState(() {});
 
           // Save data.
@@ -173,6 +173,8 @@ class _SetsPageState extends State<SetsPage> {
             return;
           }
           OpenFile.open(file.path);
+
+          // TODO: import set.
         }
       },
       itemBuilder: (context) => [
@@ -243,13 +245,13 @@ class _SetsPageState extends State<SetsPage> {
           await SimpleSqflite.updateSetName(oldName,
                                       UserData.listOfSets.getAt(index));
         } else if (value == MoreActionsMenuItems.export) {
-          // TODO: code export.
+          // TODO: export set.
         }
         else if (value == MoreActionsMenuItems.delete) {
           final deleteConfirmed = await getDeleteConfirmation(index);
           if (deleteConfirmed == true) {
-            FlashcardSet removed = UserData.listOfSets.removeAt(index);
-            UserData.listOfSets.updateIndexes(index);
+            FlashcardSet removed = await UserData.listOfSets.removeAt(index);
+            await UserData.listOfSets.updateIndexes(index);
             setState(() {});
 
             // Update in databases.
@@ -350,7 +352,7 @@ class _SetsPageState extends State<SetsPage> {
               // Not first item, add up arrow.
               index > 0 ? InkWell(
                 onTap: () async {
-                  UserData.listOfSets.moveSetUpAt(index);
+                  await UserData.listOfSets.moveSetUpAt(index);
                   // Update databases when moving up.
                   await SimpleFirebase.saveSets();
                   await SimpleSqflite.swapSets(index - 1, index);
@@ -365,7 +367,7 @@ class _SetsPageState extends State<SetsPage> {
               // Not last item, add down arrow.
               index < UserData.listOfSets.length() - 1 ? InkWell(
                 onTap: () async {
-                  UserData.listOfSets.moveSetDownAt(index);
+                  await UserData.listOfSets.moveSetDownAt(index);
                   // Update databases when moving down.
                   await SimpleFirebase.saveSets();
                   await SimpleSqflite.swapSets(index, index + 1);
