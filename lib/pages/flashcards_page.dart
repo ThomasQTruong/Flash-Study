@@ -163,7 +163,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                         );
 
                         // Swap in databases.
-                        // TODO: Swap in Firestore.
+                        await SimpleFirebase.saveSets();
                         await SimpleSqflite.swapCards(_setLinked, _currentIndex,
                                                              _currentIndex - 1);
 
@@ -191,7 +191,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                         );
 
                         // Swap in databases.
-                        // TODO: Swap in Firestore.
+                        await SimpleFirebase.saveSets();
                         await SimpleSqflite.swapCards(_setLinked, _currentIndex,
                                                              _currentIndex + 1);
 
@@ -222,7 +222,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
           InkWell(
             onTap: () async {
               // Create card and add to SQLite database.
-              // TODO: Add to Firestore too.
+              await SimpleFirebase.saveSets();
               await SimpleSqflite.addFlashcard(_setLinked.create());
               setState(() {});
             },
