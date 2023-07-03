@@ -507,12 +507,12 @@ class _SetsPageState extends State<SetsPage> {
     final temp = await getTemporaryDirectory();
     final path = "${temp.path}/${set.name}.json";
     var jsonEncoder = JsonEncoder.withIndent(" " * 4);
-    await File(path).writeAsString(jsonEncoder.convert(set.firestoreToJson())
-                                                                   .toString());
+    await File(path).writeAsString(jsonEncoder.convert(set.exportToJson())
+                                                          .toString());
 
     await Share.shareXFiles(
       [XFile(path)],
-      subject: set.name,
+      subject: "${set.name}.json",
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
   }

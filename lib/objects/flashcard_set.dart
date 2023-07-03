@@ -1,4 +1,6 @@
-import 'flashcard.dart';
+import 'package:flash_study/objects/flashcard.dart';
+import 'package:flash_study/data/user_data.dart';
+import 'package:flash_study/objects/list_of_sets.dart';
 
 /// flashcard_set.dart
 ///
@@ -11,8 +13,31 @@ class FlashcardSet {
 
 
   FlashcardSet({required this.index, required this.name});
+  FlashcardSet.importLoad({required this.name, required this.flashcards}) {
+    index = UserData.listOfSets.length();
+  }
   FlashcardSet.firestoreLoad({required this.index, required this.name,
                               required this.numberOfCards, required this.flashcards});
+
+  // File import/export.
+  Map<String, dynamic> exportToJson() => {
+    "name": name,
+    "flashcards": cardToJson()
+  };
+
+
+  factory FlashcardSet.importFromJson(Map<String, dynamic> json) {
+    List<Flashcard> loadedCards = List.empty(growable: true);
+
+    for (var cardJson in List.of(json["flashcards"])) {
+      loadedCards.add(Flashcard.firestoreFromJson(cardJson));
+    }
+
+    return FlashcardSet.importLoad(
+      name: json["name"],
+      flashcards: loadedCards
+    );
+  }
 
 
   // Firebase firestore.
