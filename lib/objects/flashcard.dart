@@ -35,10 +35,12 @@ class Flashcard {
   }
 
 
-  Map<String, dynamic> toJson() => {
-    "setName": flashcardSet?.name ?? "",
-    "cardIndex": index,
-    "front": front,
-    "back": back
-  };
+  Map<String, dynamic> toJson() {
+    return {
+      "setName": flashcardSet?.name ?? "",
+      "cardIndex": index,
+      "front": front,
+      "back": back
+    };
+  }
 }

@@ -90,6 +90,10 @@ class SimpleSqflite {
   static Future<int> deleteSet(FlashcardSet deletedSet) async {
     final db = await _getDB();
 
+    for (int i = deletedSet.flashcards.length - 1; i >= 0; --i) {
+      deleteCard(deletedSet, i);
+    }
+
     int result =  await db.delete("Sets",
         where: "name = ?",
         whereArgs: [deletedSet.name]

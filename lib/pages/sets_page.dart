@@ -1,18 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/data/user_data.dart';
+import 'package:flash_study/objects/list_of_sets.dart';
 import 'package:flash_study/pages/flashcards_page.dart';
 import 'package:flash_study/utils/palette.dart';
 import 'package:flash_study/utils/useful_widgets.dart';
 import 'package:flash_study/utils/simple_sqflite.dart';
 import 'package:flash_study/utils/simple_firebase.dart';
+import 'package:flash_study/objects/flashcard.dart';
 import 'package:flash_study/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
+
+
+bool _loading = true;
 
 
 enum AddSetMenuItems {
@@ -61,6 +65,8 @@ class _SetsPageState extends State<SetsPage> {
         await SimpleSqflite.loadSets();
       }
 
+      _loading = false;
+
       setState(() {});
     });
   }
@@ -81,58 +87,71 @@ class _SetsPageState extends State<SetsPage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 2.0,
-        shadowColor: Theme.of(context).colorScheme.inversePrimary,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(
-          widget.title,
-          style: const TextStyle(
-            fontSize: 26.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        actions: <Widget>[
-          // Settings button.
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsPage(title: "Settings")
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              child: UserData.listOfSets.isEmpty() ? const Center(
-                child: Text(
-                  "Empty",
-                  style: TextStyle(
-                    fontSize: 45.0,
-                  ),
-                ),
-              ) : Scrollbar(
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 80.0),
-                  itemCount: UserData.listOfSets.length(),
-                  itemBuilder: (context, index) => getSetAsCard(index),
-                ),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            elevation: 2.0,
+            shadowColor: Theme.of(context).colorScheme.inversePrimary,
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: Text(
+              widget.title,
+              style: const TextStyle(
+                fontSize: 26.0,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
+            centerTitle: true,
+            actions: <Widget>[
+              ElevatedButton(onPressed: () {SimpleSqflite.clearDatabase();}, child: Text("CLEAR")),
+              // Settings button.
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsPage(title: "Settings")
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  child: UserData.listOfSets.isEmpty() ? const Center(
+                    child: Text(
+                      "Empty",
+                      style: TextStyle(
+                        fontSize: 45.0,
+                      ),
+                    ),
+                  ) : Scrollbar(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 80.0),
+                      itemCount: UserData.listOfSets.length(),
+                      itemBuilder: (context, index) => getSetAsCard(index),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          floatingActionButton: addSetButtonAndMenu(),
         ),
-      ),
-      floatingActionButton: addSetButtonAndMenu(),
+        Visibility(
+          visible: _loading,
+          child: Container(
+            alignment: Alignment.center,
+            color: Colors.white70,
+            child: const CircularProgressIndicator(),
+          ),
+        ),
+      ],
     );
   }
 
@@ -174,6 +193,9 @@ class _SetsPageState extends State<SetsPage> {
           // Save to databases.
           await SimpleFirebase.saveSets();
           await SimpleSqflite.addSet(importedSet);
+          for (Flashcard card in importedSet.flashcards) {
+            await SimpleSqflite.addFlashcard(card);
+          }
         }
       },
       itemBuilder: (context) => [
@@ -510,30 +532,41 @@ class _SetsPageState extends State<SetsPage> {
     );
   }
 
+
   Future<FlashcardSet?> importPressed() async {
+    // Let user choose file.
     final result = await FilePicker.platform.pickFiles();
     if (result == null) {
       displayMessage("Import cancelled.");
       return null;
     }
 
+    // Invalid file type.
     final file = result.files.first;
     if (file.extension != "json") {
       displayMessage("Imported file is invalid.");
       return null;
     }
+
+    // Map json file.
     final fileConverted = File(file.path.toString());
     String jsonString = await fileConverted.readAsString();
     Map<String, dynamic> json = await jsonDecode(jsonString);
 
+    // Set already exists.
     if (UserData.listOfSets.hasSetNamed(json["name"])) {
       displayMessage("${json["name"]} already exists.");
       return null;
     }
 
+    // Load and save set.
     FlashcardSet set = FlashcardSet.importFromJson(json);
-
     await UserData.listOfSets.add(set);
+
+    // Load flashcards.
+    for (var cardJson in List.of(json["flashcards"])) {
+      set.add(Flashcard.firestoreFromJson(cardJson));
+    }
 
     setState(() {});
 

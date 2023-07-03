@@ -97,6 +97,7 @@ class ListOfSets {
 
   FlashcardSet? getByName(String setToGet) {
     for (FlashcardSet set in sets) {
+      print("${set.name} == $setToGet");
       if (set.name == setToGet) {
         return set;
       }

@@ -77,15 +77,15 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                     children: [
                       ElevatedButton(
                         onPressed: () async {
+                          final progress = ProgressHUD.of(context);
+
                           final loginConfirmed = await getLoginConfirmation();
                           // User clicked cancel.
                           if (!loginConfirmed!) {
                             return;
                           }
 
-                          final progress = ProgressHUD.of(context);
                           progress?.show();
-
                           await FirebaseAuth.instance.signInWithEmailAndPassword(
                             email: emailController.text,
                             password: passwordController.text,

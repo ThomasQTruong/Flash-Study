@@ -31,10 +31,6 @@ class FlashcardSet {
   factory FlashcardSet.importFromJson(Map<String, dynamic> json) {
     List<Flashcard> loadedCards = List.empty(growable: true);
 
-    for (var cardJson in List.of(json["flashcards"])) {
-      loadedCards.add(Flashcard.firestoreFromJson(cardJson));
-    }
-
     return FlashcardSet.importLoad(
       name: json["name"],
       flashcards: loadedCards
