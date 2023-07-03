@@ -1,5 +1,6 @@
 import 'package:flash_study/utils/palette.dart';
 import 'package:flash_study/utils/simple_firebase.dart';
+import 'package:flash_study/utils/simple_sqflite.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
@@ -76,6 +77,12 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                     children: [
                       ElevatedButton(
                         onPressed: () async {
+                          final loginConfirmed = await getLoginConfirmation();
+                          // User clicked cancel.
+                          if (!loginConfirmed!) {
+                            return;
+                          }
+
                           final progress = ProgressHUD.of(context);
                           progress?.show();
 
@@ -92,10 +99,13 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                             FirebaseAuthException).message.toString());
                           });
 
-
                           await SimpleFirebase.loginLoadSets();
-
                           progress?.dismiss();
+
+                          // Re-sync with databases.
+                          SimpleFirebase.saveSets();
+                          SimpleSqflite.clearDatabase();
+                          SimpleSqflite.addAll();
                         },
                         child: const Text(
                           "Login",
@@ -186,4 +196,38 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
       ),
     );
   }
+
+
+  Future<bool?> getLoginConfirmation() => showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+        title: const Text(
+          "WARNING: If there are sets with the same name, the one on your account will be overwritten.",
+          style: TextStyle(
+            // fontWeight: FontWeight.bold,
+          ),
+        ),
+        surfaceTintColor: Theme.of(context).canvasColor,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text(
+              "Cancel",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(
+              "Proceed",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ]
+    ),
+  );
 }
