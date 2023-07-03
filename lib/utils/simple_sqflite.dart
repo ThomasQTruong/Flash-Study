@@ -67,7 +67,17 @@ class SimpleSqflite {
   }
 
 
-  static Future<int> updateSet(String oldName, FlashcardSet cardSet) async {
+  static Future<int> updateSet(FlashcardSet cardSet) async {
+    final db = await _getDB();
+    return await db.update("Sets", cardSet.sqlToJson(),
+        where: "name = ?",
+        whereArgs: [cardSet.name],
+        conflictAlgorithm: ConflictAlgorithm.replace
+    );
+  }
+
+
+  static Future<int> updateSetName(String oldName, FlashcardSet cardSet) async {
     final db = await _getDB();
     return await db.update("Sets", cardSet.sqlToJson(),
         where: "name = ?",
@@ -127,6 +137,32 @@ class SimpleSqflite {
     ListOfSets setsList = ListOfSets.sqfliteFromJson(setsJson, cardsJson);
 
     UserData.overwriteSet(setsList);
+  }
+
+
+  static Future<bool> swapSets(int setIndex1, int setIndex2) async {
+    // Any setIndex out of bounds, cancel operation.
+    if (setIndex1 < 0) {
+      return false;
+    }
+    if (setIndex2 < 0) {
+      return false;
+    }
+    if (setIndex1 >= UserData.listOfSets.length()) {
+      return false;
+    }
+    if (setIndex2 >= UserData.listOfSets.length()) {
+      return false;
+    }
+    // Indexes are the same, no need to swap.
+    if (setIndex1 == setIndex2) {
+      return false;
+    }
+
+    updateSet(UserData.listOfSets.sets[setIndex1]);
+    updateSet(UserData.listOfSets.sets[setIndex2]);
+
+    return true;
   }
 
 

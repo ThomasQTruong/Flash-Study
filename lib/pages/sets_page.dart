@@ -237,7 +237,8 @@ class _SetsPageState extends State<SetsPage> {
 
           String oldName = UserData.listOfSets.getNameAt(index);
           setState(() => UserData.listOfSets.setNameAt(index, setName));
-          SimpleSqflite.updateSet(oldName, UserData.listOfSets.getAt(index));
+          SimpleSqflite.updateSetName(oldName,
+                                      UserData.listOfSets.getAt(index));
         } else if (value == MoreActionsMenuItems.export) {
           // TODO: code export.
         }
@@ -339,10 +340,13 @@ class _SetsPageState extends State<SetsPage> {
             children: [
               // Not first item, add up arrow.
               index > 0 ? InkWell(
-                onTap: () => setState(() {
+                onTap: () async {
                   UserData.listOfSets.moveSetUpAt(index);
-                  // TODO: Update databases when moving up.
-                }),
+                  // Update databases when moving up.
+                  await SimpleFirebase.saveSets();
+                  await SimpleSqflite.swapSets(index - 1, index);
+                  setState(() {});
+                },
                 child: const Icon(Icons.arrow_upward),
               ) : const Opacity(
                 opacity: 0.0,
@@ -351,10 +355,14 @@ class _SetsPageState extends State<SetsPage> {
 
               // Not last item, add down arrow.
               index < UserData.listOfSets.length() - 1 ? InkWell(
-                onTap: () => setState(() {
+                onTap: () async {
                   UserData.listOfSets.moveSetDownAt(index);
-                  // TODO: Update databases when moving down.
-                }),
+                  // Update databases when moving down.
+                  await SimpleFirebase.saveSets();
+                  await SimpleSqflite.swapSets(index, index + 1);
+
+                  setState(() {});
+                },
                 child: const Icon(Icons.arrow_downward),
               ) : const Opacity(
                 opacity: 0.0,

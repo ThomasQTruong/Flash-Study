@@ -127,6 +127,10 @@ class ListOfSets {
     sets[index - 1] = sets[index];
     sets[index] = previousSet;
 
+    // Update indexes.
+    sets[index - 1].index = index - 1;
+    sets[index].index = index;
+
     return true;
   }
 
@@ -141,6 +145,10 @@ class ListOfSets {
     FlashcardSet nextSet = sets[index + 1];
     sets[index + 1] = sets[index];
     sets[index] = nextSet;
+
+    // Update indexes.
+    sets[index + 1].index = index + 1;
+    sets[index].index = index;
 
     return true;
   }
