@@ -74,12 +74,11 @@ class FlashStudyState extends State<FlashStudy>{
 
     // Data loading in pages/sets_page.dart also.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Wait for data to load if any.
-      await SimpleFirebase.loadPreferences();
-      UserData.updateTheme();
-
-      // Sync preferences to local when loaded from Firestore.
+      // Load data from Firestore and sync with local.
       if (SimpleFirebase.isLoggedIn()) {
+        await SimpleFirebase.loadPreferences();
+        UserData.updateTheme();
+
         await SimplePreferences.saveAll();
       }
 
