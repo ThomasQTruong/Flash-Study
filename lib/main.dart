@@ -3,9 +3,12 @@ import 'package:flash_study/data/user_data.dart';
 import 'package:flash_study/utils/palette.dart';
 import 'package:flash_study/utils/simple_firebase.dart';
 import 'package:flash_study/utils/simple_preferences.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'data/firebase_options.dart';
 
 
@@ -19,6 +22,10 @@ void main() async {
   // FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
   await SimplePreferences.init();
+
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  }
 
   // Run app.
   runApp(const FlashStudy());
