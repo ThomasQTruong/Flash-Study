@@ -8,6 +8,8 @@ import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+
+/// The settings page.
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.title});
 
@@ -41,6 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Builder(
           builder: (context) => SettingsList(
             sections: [
+              // Account section.
               SettingsSection(
                 title: const Text("Account"),
                 tiles: <SettingsTile>[
@@ -49,6 +52,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ? logoutButton() : loginOrRegisterButton(),
                 ],
               ),
+              // Themes section.
               SettingsSection(
                 title: const Text("Themes"),
                 tiles: <SettingsTile>[
@@ -79,6 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
 
+  /// Login/Register button widget.
   SettingsTile loginOrRegisterButton() {
     return SettingsTile.navigation(
       leading: const Icon(Icons.login),
@@ -92,8 +97,8 @@ class _SettingsPageState extends State<SettingsPage> {
               title: "Login/Register",
             ),
           ),
-          // Update settings page after returning.
         ).then((_) {
+          // Update settings page after returning.
           updateThemeAndState();
         });
       },
@@ -101,6 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
 
+  /// Logout button widget.
   SettingsTile logoutButton() {
     return SettingsTile.navigation(
       leading: const Icon(Icons.logout),
@@ -120,6 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
 
+  /// Updates the app's theme and state.
   void updateThemeAndState() {
     setState(() {
       UserData.updateTheme();

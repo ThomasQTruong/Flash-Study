@@ -1,8 +1,7 @@
 import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/data/user_data.dart';
 
-/// flashcard.dart
-///
+
 /// A flashcard.
 class Flashcard {
   FlashcardSet? flashcardSet;
@@ -11,10 +10,13 @@ class Flashcard {
   String back;
 
 
+
+  // Constructors.
+  /// Creates a flashcard normally.
   Flashcard({required this.flashcardSet, required this.index,
                              this.front = "", this.back = ""});
 
-
+  /// Creates a flashcard with data from the SQLite database.
   factory Flashcard.sqlFromJson(FlashcardSet linkedTo, Map<String, dynamic> json) {
     return Flashcard(
         flashcardSet: linkedTo,
@@ -24,7 +26,7 @@ class Flashcard {
     );
   }
 
-
+  /// Creates a flashcard with the data from the Firestore database.
   factory Flashcard.firestoreFromJson(Map<String, dynamic> json, FlashcardSet setLinked) {
     return Flashcard(
         flashcardSet: setLinked,
@@ -34,7 +36,7 @@ class Flashcard {
     );
   }
 
-
+  /// Creates a flashcard with the user's imported json.
   factory Flashcard.importFromJson(Map<String, dynamic> json) {
     return Flashcard(
         flashcardSet: UserData.listOfSets.getByName(json["setName"]),
@@ -45,6 +47,9 @@ class Flashcard {
   }
 
 
+
+  // Functions.
+  /// Converts the flashcard into a json.
   Map<String, dynamic> toJson() {
     return {
       "setName": flashcardSet?.name ?? "",

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 
+
+/// The login/register page.
 class LoginRegisterPage extends StatefulWidget {
   const LoginRegisterPage({super.key, required this.title});
 
@@ -164,6 +166,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
   }
 
 
+  /// Displays the error for why the user cannot login/register.
   Padding displayError() {
     return Padding(
       padding: const EdgeInsets.only(
@@ -199,6 +202,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
   }
 
 
+  /// Gets user's confirmation to log in.
   Future<bool?> getLoginConfirmation() => showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(

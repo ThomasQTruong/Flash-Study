@@ -5,18 +5,23 @@ import 'package:flash_study/objects/list_of_sets.dart';
 import 'package:flash_study/objects/flashcard_set.dart';
 import 'package:flash_study/utils/simple_preferences.dart';
 
+
+/// Simplifies the usage of Firebase.
 class SimpleFirebase {
+  /// Returns whether the user is logged in or not.
   static bool isLoggedIn() {
     return FirebaseAuth.instance.currentUser != null;
   }
 
 
+  /// Retrieves the document reference to the "preferences" collection.
   static DocumentReference<Map<String, dynamic>> getPreferencesFirestore() {
     return FirebaseFirestore.instance.collection("preferences")
         .doc(FirebaseAuth.instance.currentUser?.uid);
   }
 
 
+  /// Retrieves the document reference to the "sets" collection.
   static DocumentReference<ListOfSets> getSetsFirestore() {
     return FirebaseFirestore.instance.collection("sets").withConverter(
       fromFirestore: ListOfSets.firestoreFromJson,
@@ -25,6 +30,7 @@ class SimpleFirebase {
   }
 
 
+  /// Saves all of the user's preferences to the database.
   static Future<void> savePreferences() async {
     // Update Firebase storage if user is logged in.
     if (isLoggedIn()) {
@@ -38,6 +44,7 @@ class SimpleFirebase {
   }
 
 
+  /// Save all of the user's sets and cards into the database.
   static Future<void> saveSets() async {
     // Update Firebase storage if user is logged in.
     if (isLoggedIn()) {
@@ -46,6 +53,7 @@ class SimpleFirebase {
   }
 
 
+  /// Loads all of the sets from the database into the program.
   static Future<void> loadSets() async {
     if (!UserData.LOAD_FIRESTORE) {
       return;
@@ -59,6 +67,7 @@ class SimpleFirebase {
   }
 
 
+  /// If user logged in, load all sets from account.
   static Future<void> loginLoadSets() async {
     if (!UserData.LOAD_FIRESTORE) {
       return;
@@ -93,6 +102,7 @@ class SimpleFirebase {
   }
 
 
+  /// Loads all of the user's preferences into the program.
   static Future<void> loadPreferences() async {
     if (!UserData.LOAD_FIRESTORE) {
       return;

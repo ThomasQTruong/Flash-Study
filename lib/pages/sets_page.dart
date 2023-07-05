@@ -15,15 +15,18 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 
+/// App/data still loading?
 bool _loading = true;
 
 
+/// Types of buttons for the Add Set menu.
 enum AddSetMenuItems {
   create,
   import,
 }
 
 
+/// Types of buttons for the More Actions menu.
 enum MoreActionsMenuItems {
   edit,
   export,
@@ -31,6 +34,7 @@ enum MoreActionsMenuItems {
 }
 
 
+/// The page with all of the sets.
 class SetsPage extends StatefulWidget {
   const SetsPage({super.key, required this.title});
 
@@ -43,6 +47,7 @@ class SetsPage extends StatefulWidget {
 
 
 class _SetsPageState extends State<SetsPage> {
+  // Used to get user's input for set names.
   late TextEditingController controller;
 
   @override
@@ -51,6 +56,7 @@ class _SetsPageState extends State<SetsPage> {
 
     controller = TextEditingController();
 
+    // What to do after the page loads.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Logged in, load from Firestore.
       if (SimpleFirebase.isLoggedIn()) {
@@ -64,6 +70,7 @@ class _SetsPageState extends State<SetsPage> {
         await SimpleSqflite.loadSets();
       }
 
+      // Not loading anymore.
       _loading = false;
 
       setState(() {});
@@ -88,6 +95,7 @@ class _SetsPageState extends State<SetsPage> {
     // than having to individually change instances of widgets.
     return Stack(
       children: [
+        // Sets page.
         Scaffold(
           appBar: AppBar(
             elevation: 2.0,
@@ -143,6 +151,7 @@ class _SetsPageState extends State<SetsPage> {
           ),
           floatingActionButton: addSetButtonAndMenu(),
         ),
+        // Loading screen.
         Visibility(
           visible: _loading,
           child: Container(
@@ -156,8 +165,10 @@ class _SetsPageState extends State<SetsPage> {
   }
 
 
+  /// Add Set Button widget with a popup menu.
   PopupMenuButton<AddSetMenuItems> addSetButtonAndMenu() {
     return PopupMenuButton<AddSetMenuItems>(
+      // Actions when an item is selected.
       onSelected: (value) async {
         if (value == AddSetMenuItems.create) {
           // Get name from user.
@@ -198,6 +209,7 @@ class _SetsPageState extends State<SetsPage> {
           }
         }
       },
+      // Creates the menu.
       itemBuilder: (context) => [
         const PopupMenuItem(
           value: AddSetMenuItems.create,
@@ -236,6 +248,7 @@ class _SetsPageState extends State<SetsPage> {
   }
 
 
+  /// More Actions Button widget with popup menu.
   PopupMenuButton<MoreActionsMenuItems> moreActionsButtonAndMenu(index) {
     return PopupMenuButton<MoreActionsMenuItems>(
       // When action is selected.
@@ -247,17 +260,20 @@ class _SetsPageState extends State<SetsPage> {
             controller.clear();
             return;
           }
+          // Set name already exists.
           if (UserData.listOfSets.hasSetNamed(setName)) {
             controller.clear();
             displayMessage("Set name already exists!");
             return;
           }
+          // Blank set name.
           if (setName == "") {
             controller.clear();
             displayMessage("Set name cannot be blank!");
             return;
           }
 
+          // Proper set name, update.
           String oldName = UserData.listOfSets.getNameAt(index);
           setState(() => UserData.listOfSets.setNameAt(index, setName));
 
@@ -270,6 +286,8 @@ class _SetsPageState extends State<SetsPage> {
         }
         else if (value == MoreActionsMenuItems.delete) {
           final deleteConfirmed = await getDeleteConfirmation(index);
+
+          // User confirmed to delete.
           if (deleteConfirmed == true) {
             FlashcardSet removed = await UserData.listOfSets.removeAt(index);
             await UserData.listOfSets.updateIndexes(index);
@@ -335,6 +353,7 @@ class _SetsPageState extends State<SetsPage> {
   }
 
 
+  /// Turns a set into a card.
   Widget getSetAsCard(int index) {
     return Card(
       elevation: 5.0,
@@ -376,7 +395,7 @@ class _SetsPageState extends State<SetsPage> {
                   await UserData.listOfSets.moveSetUpAt(index);
                   // Update databases when moving up.
                   await SimpleFirebase.saveSets();
-                  await SimpleSqflite.swapSets(index - 1, index);
+                  await SimpleSqflite.updateSwappedSets(index - 1, index);
                   setState(() {});
                 },
                 child: const Icon(Icons.arrow_upward),
@@ -391,7 +410,7 @@ class _SetsPageState extends State<SetsPage> {
                   await UserData.listOfSets.moveSetDownAt(index);
                   // Update databases when moving down.
                   await SimpleFirebase.saveSets();
-                  await SimpleSqflite.swapSets(index, index + 1);
+                  await SimpleSqflite.updateSwappedSets(index, index + 1);
 
                   setState(() {});
                 },
@@ -411,6 +430,7 @@ class _SetsPageState extends State<SetsPage> {
   }
 
 
+  /// Displays a messgae to the screen.
   void displayMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -435,6 +455,7 @@ class _SetsPageState extends State<SetsPage> {
   }
 
 
+  /// Asks the user to input the name for a set.
   Future<String?> getSetName(String action) => showDialog<String>(
     context: context,
     builder: (context) => Center(
@@ -475,6 +496,7 @@ class _SetsPageState extends State<SetsPage> {
   );
 
 
+  /// Gets user's confirmation on deleting a set.
   Future<bool?> getDeleteConfirmation(index) => showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
@@ -510,6 +532,7 @@ class _SetsPageState extends State<SetsPage> {
   );
 
 
+  /// When the create set button is pressed.
   void createSetButton() {
     Navigator.of(context).pop(controller.text);
 
@@ -517,6 +540,7 @@ class _SetsPageState extends State<SetsPage> {
   }
 
 
+  /// When the export button is pressed.
   Future<void> exportPressed(FlashcardSet set) async {
     final box = context.findRenderObject() as RenderBox?;
     final temp = await getTemporaryDirectory();
@@ -533,6 +557,7 @@ class _SetsPageState extends State<SetsPage> {
   }
 
 
+  /// When the import button is pressed.
   Future<FlashcardSet?> importPressed() async {
     // Let user choose file.
     final result = await FilePicker.platform.pickFiles();

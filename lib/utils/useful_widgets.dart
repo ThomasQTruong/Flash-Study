@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
+
+/// Contains some useful widgets.
 class UsefulWidgets {
+
+  /// Widget of a circular Add Button.
   static Widget addButtonDesign() {
     return Container(
       width: 50.0,

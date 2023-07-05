@@ -10,9 +10,11 @@ import 'package:flash_study/utils/simple_sqflite.dart';
 import 'package:flash_study/utils/palette.dart';
 
 
+// Flashcard information.
 double _flashcardWidth = 450;
 double _flashcardHeight = 258.0;
 
+// Program information.
 late FlashcardSet _setLinked;
 int _currentIndex = 0;
 bool _currentFaceFront = true;
@@ -20,6 +22,7 @@ bool _enabledEditing = false;
 TextEditingController? _cardController;
 
 
+// The page with all of the flashcards for a set.
 class FlashcardsPage extends StatefulWidget {
   FlashcardsPage({super.key, required this.title}) {
     _setLinked = UserData.listOfSets.getByName(title)!;
@@ -107,6 +110,8 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
       ),
       body: Builder(
         builder: (context) => Center(
+          // If there are no flashcards, display "Empty" text,
+          // otherwise, display flashcards and tools.
           child: _setLinked.flashcards.isEmpty
                      ? const Text("Empty", style: TextStyle(fontSize: 45.0))
                      : SingleChildScrollView(
@@ -120,7 +125,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       InkWell(
-                        onTap: editButton,
+                        onTap: editButtonPressed,
                         customBorder: const CircleBorder(),
                         child: const Icon(Icons.edit, size: 20.0),
                       ),
@@ -152,6 +157,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
                     ],
                   ),
                 ),
+                // Displays the current flashcard.
                 currentFlashcard(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -165,8 +171,8 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
 
                         // Swap in databases.
                         await SimpleFirebase.saveSets();
-                        await SimpleSqflite.swapCards(_setLinked, _currentIndex,
-                                                             _currentIndex - 1);
+                        await SimpleSqflite.updateSwappedCards(_setLinked,
+                                              _currentIndex, _currentIndex - 1);
 
 
                         // Fix index to stay on moved card.
@@ -193,8 +199,8 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
 
                         // Swap in databases.
                         await SimpleFirebase.saveSets();
-                        await SimpleSqflite.swapCards(_setLinked, _currentIndex,
-                                                             _currentIndex + 1);
+                        await SimpleSqflite.updateSwappedCards(_setLinked,
+                                              _currentIndex, _currentIndex + 1);
 
                         // Fix index to stay on moved card.
                         _currentIndex++;
@@ -239,6 +245,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
   }
 
 
+  /// Retrieves a widget of the current flashcard.
   Widget currentFlashcard() {
     return GestureDetector(
       onTap: () {
@@ -322,7 +329,10 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
     );
   }
 
-  Future<void> editButton() async {
+
+
+  /// When the edit button is pressed.
+  Future<void> editButtonPressed() async {
     _enabledEditing = !_enabledEditing;
     if (!_enabledEditing) {
       // Not editing anymore, save user input.
@@ -341,6 +351,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
   }
 
 
+  /// Gets user's confirmation to delete a flashcard.
   Future<bool?> getDeleteConfirmation() => showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
@@ -375,7 +386,7 @@ class _FlashcardsPageState extends State<FlashcardsPage> {
     ),
   );
 
-
+  /// Sets program values to default.
   void setValuesToDefault() {
     _currentFaceFront = true;
     _enabledEditing = false;

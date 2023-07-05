@@ -12,6 +12,7 @@ import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'data/firebase_options.dart';
 
 
+/// Program starts here.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -19,10 +20,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
+  // Wait for Shared Preferences to load.
   await SimplePreferences.init();
 
+  // Is a website.
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
   }
@@ -50,6 +52,7 @@ class FlashStudyState extends State<FlashStudy>{
       debugShowCheckedModeBanner: false,
 
       title: "Flash Study",
+      // Light/dark theme.
       theme: ThemeData(
         fontFamily: GoogleFonts.inconsolata().fontFamily,  // GoogleFonts.arvo().fontFamily,
         colorScheme: ColorScheme.fromSeed(

@@ -10,6 +10,7 @@ class SimpleSqflite {
   static const _databaseName = "FlashStudy.db";
 
 
+  /// Creates the database tables in SQLite if they do not exist.
   static Future<void> createDatabaseTables(Database db) async {
     await db.execute("""
       CREATE TABLE IF NOT EXISTS Sets (
@@ -30,6 +31,7 @@ class SimpleSqflite {
   }
 
 
+  /// Retrieves the database.
   static Future<Database> _getDB() async {
     return openDatabase(join(await getDatabasesPath(), _databaseName),
       onCreate: (db, version) async {
@@ -40,6 +42,7 @@ class SimpleSqflite {
   }
 
 
+  /// Clears all of the tables in the database.
   static Future<void> clearDatabase() async {
     final db = await _getDB();
 
@@ -48,6 +51,7 @@ class SimpleSqflite {
   }
 
 
+  /// Adds every flashcard set and flashcard into the database.
   static Future<void> addAll() async {
     for (FlashcardSet set in UserData.listOfSets.sets) {
       await addSet(set);
@@ -58,7 +62,9 @@ class SimpleSqflite {
   }
 
 
-  // Functions for sets.
+
+  // Functions for Flashcard Sets.
+  /// Adds a flashcard set into the database.
   static Future<int> addSet(FlashcardSet cardSet) async {
     final db = await _getDB();
 
@@ -67,8 +73,10 @@ class SimpleSqflite {
   }
 
 
+  /// Updates existing information in the database for a flashcard set.
   static Future<int> updateSet(FlashcardSet cardSet) async {
     final db = await _getDB();
+
     return await db.update("Sets", cardSet.sqlToJson(),
         where: "name = ?",
         whereArgs: [cardSet.name],
@@ -77,8 +85,10 @@ class SimpleSqflite {
   }
 
 
+  /// Updates the name of an existing flashcard set in the database.
   static Future<int> updateSetName(String oldName, FlashcardSet cardSet) async {
     final db = await _getDB();
+
     return await db.update("Sets", cardSet.sqlToJson(),
         where: "name = ?",
         whereArgs: [oldName],
@@ -87,6 +97,7 @@ class SimpleSqflite {
   }
 
 
+  /// Deletes a flashcard set from the database (returns the deleted set).
   static Future<int> deleteSet(FlashcardSet deletedSet) async {
     final db = await _getDB();
 
@@ -106,6 +117,7 @@ class SimpleSqflite {
   }
 
 
+  /// Updates the indexes of sets after a set was deleted.
   static Future<void> updateSetsIndex(int deletedAt) async {
     int? numberOfSets = UserData.listOfSets.length();
 
@@ -126,6 +138,7 @@ class SimpleSqflite {
   }
 
 
+  /// Loads every set from the database into the program.
   static Future<void> loadSets() async {
     if (!UserData.LOAD_SQLITE) {
       return;
@@ -151,7 +164,8 @@ class SimpleSqflite {
   }
 
 
-  static Future<bool> swapSets(int setIndex1, int setIndex2) async {
+  /// Updates two sets in the database if they were swapped.
+  static Future<bool> updateSwappedSets(int setIndex1, int setIndex2) async {
     // Any setIndex out of bounds, cancel operation.
     if (setIndex1 < 0) {
       return false;
@@ -178,6 +192,7 @@ class SimpleSqflite {
 
 
   // Functions for flashcards.
+  /// Adds a flashcard into the database.
   static Future<int> addFlashcard(Flashcard card) async {
     final db = await _getDB();
 
@@ -186,6 +201,7 @@ class SimpleSqflite {
   }
 
 
+  /// Updates an existing flashcard in the database.
   static Future<int> updateFlashcard(Flashcard card) async {
     final db = await _getDB();
     return await db.update("Flashcards", card.toJson(),
@@ -196,6 +212,7 @@ class SimpleSqflite {
   }
 
 
+  /// Deletes a flashcard from the database.
   static Future<int> deleteCard(FlashcardSet set, int index) async {
     final db = await _getDB();
 
@@ -211,7 +228,8 @@ class SimpleSqflite {
   }
 
 
-  static Future<void> swapCards(FlashcardSet set,
+  /// Updates two flashcards in the database that were swapped.
+  static Future<void> updateSwappedCards(FlashcardSet set,
            int cardIndex1, int cardIndex2) async {
     // Any cardIndex lower than lower bound, cardIndex = last index.
     if (cardIndex1 < 0) {
@@ -237,6 +255,7 @@ class SimpleSqflite {
   }
 
 
+  /// Updates the indexes of the flashcards after a set was deleted.
   static Future<void> updateCardsIndex(FlashcardSet set, int deletedAt) async {
     int? numberOfCards = set.numberOfCards;
 
