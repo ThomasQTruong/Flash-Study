@@ -57,17 +57,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 title: const Text("Themes"),
                 tiles: <SettingsTile>[
                   SettingsTile.switchTile(
-                    onToggle: (value) {
-                      setState(() async {
-                        // Toggle dark mode and update theme.
-                        UserData.isDarkMode = !UserData.isDarkMode;
+                    onToggle: (value) async{
+                      // Toggle dark mode and update theme.
+                      UserData.isDarkMode = !UserData.isDarkMode;
 
-                        updateThemeAndState();
+                      updateThemeAndState();
 
-                        // Save to Firebase and SharedPreferences.
-                        await SimpleFirebase.savePreferences();
-                        await SimplePreferences.setDarkMode(UserData.isDarkMode);
-                      });
+                      // Save to Firebase and SharedPreferences.
+                      await SimpleFirebase.savePreferences();
+                      await SimplePreferences.setDarkMode(UserData.isDarkMode);
+                      setState(() {});
                     },
                     initialValue: UserData.isDarkMode,
                     leading: const Icon(Icons.dark_mode),
